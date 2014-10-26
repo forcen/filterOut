@@ -1,0 +1,43 @@
+body {margin:0;padding:0;font-family:Verdana, Arial, sans-serif;}
+header, footer{position:absolute;background:white;z-index:100;width:100%;}
+header{padding:12px;padding-bottom:4px;border-bottom:1px solid #565656;background:white;z-index:100;top:0}
+footer{padding:6px;bottom:0;border-top:1px solid #565656}
+
+button{border:1px solid white;color:#878787;background:none;font-size:14px;border-radius:4px;padding:6px 12px;margin-left:6px;}
+button:hover{border:1px solid #e7302d;color:#e7302d;cursor:pointer;}
+
+.content{}
+
+.field{margin-top:12px;}
+.controls{text-align:right;}
+
+#config{position:relative;top:-270px;left:auto;width:350px;z-index:99;border:1px solid black;border-top:none;border-radius:0 0 8px 8px;
+padding:16px;padding-bottom:12px;margin:0 auto;
+-webkit-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.6);
+-moz-box-shadow:    3px 3px 7px 0px rgba(50, 50, 50, 0.6);
+box-shadow:         3px 3px 7px 0px rgba(50, 50, 50, 0.6);}
+
+#config p{font-size:12px;color:#878787;margin:0;}
+#config input{width:99%;}
+#config h3{margin-top:24px;}
+
+
+.slidedown, .slideup{
+  -webkit-animation: animationFramesDown ease-in-out .5s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-fill-mode: forwards !important
+}
+
+.slideup {
+  -webkit-animation-name: animationFramesUp
+}
+
+@-webkit-keyframes animationFramesUp {
+  0% {top:35px}
+  100% {top:-270px}
+}
+
+@-webkit-keyframes animationFramesDown {
+  0% {top:-270px}
+  100% {top:35px}
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+	<head>
+    	<title>Popup</title>
+   		<link href="popup.css" rel="stylesheet" type="text/css">
+  	</head>
+	<body>
+	<header>
+		<img src="header.png" />
+	</header>
+
+	<div>
+		<div id="config">
+			<h3 id="site_name">Sitename.com</h3>
+			<p>You can specify a tag, a class or a combination of both to identify both Target and Container elements.</p>
+		
+			<div class="field">
+				<label for="target">Target element</label>
+				<p>This selector helps us to find what you want to filter out.</p>
+				<input type="text" id="target" />
+			</div>
+		
+			<div class="field">
+				<label for="container">Container element</label>
+				<p>This selector identifies the block that contains the content to hide.</p>
+				<input type="text" id="container" />
+			</div>
+
+			<div class="field controls">
+				<button id="btn_cancel">Cancel</button>
+				<button id="btn_save">Save</button>
+			</div>
+		</div>
+	</div>
+	<div id="results">
+
+	</div>
+	
+    <footer class="controls">
+	    <button id="btn_about">About</button>
+	    <button id="btn_config">Configuration</button>
+    </footer>
+    <script src="popup.js"></script>
+  </body>
+</html>
