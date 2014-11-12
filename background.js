@@ -6,26 +6,43 @@ function getDomainName (strURL) {
         arrParts = arrURL[2].split(':'),
         arrDomain = arrParts[0].split('.');
 
-    arrDomain.shift();
+    // assume it has a subdomain.
+    if(arrDomain.length > 2) {
+       arrDomain.shift();
+    }
 
     return arrDomain.join('.');
 }
 
-// let's start slowly: where are we?
-chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
-    if (change.status == "complete") {
+/**
+ * keep the strCurDomain param updated using this three methods
+ */
+chrome.windows.onFocusChanged.addListener(function (windowId) {
+    chrome.tabs.getSelected(windowId, function (tab) {
         strCurDomain = getDomainName(tab.url);
-        updateAddress(tabId);
+    });
+});
+
+chrome.tabs.onActivated.addListener(function(activeInfo) {
+    chrome.tabs.get(activeInfo.tabId, function (tab) {
+        strCurDomain = getDomainName(tab.url);
+    });
+});
+
+/**
+ * this method, additionally, updates the list of content and
+ * executes the filtering if there's any data stored for the url
+ */
+chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
+    strCurDomain = getDomainName(tab.url);
+    if (change.status === "complete") {
+
     }
 });
 
+
 chrome.tabs.query({active: true, currentWindow: true},
-        function(tabs) {
-            strCurDomain = getDomainName(tabs[0].url);
-            updateAddress(tabs[0].id);
+    function(tabs) {
+        strCurDomain = getDomainName(tabs[0].url);
+   //     updateAddress(tabs[0].id);
 });
-
-
-//console.log(getDomainName('http://www.pepe.com'))
-
-//Test.assertEqual(getDomainName('http://www.pepe.com'), 'pepe.com');

@@ -1,26 +1,36 @@
-body {margin:0;padding:0;font-family:Verdana, Arial, sans-serif;}
-header, footer{position:absolute;background:white;z-index:100;width:100%;}
-header{padding:12px;padding-bottom:4px;border-bottom:1px solid #565656;background:white;z-index:100;top:0}
-footer{padding:6px;bottom:0;border-top:1px solid #565656}
+body {margin:0;padding:0;font-family:Verdana, Arial, sans-serif;height:500px}
+header, footer{position:absolute;background:white;z-index:100;width:100%;z-index:1000}
+header{padding:12px;padding-bottom:4px;border-bottom:1px solid #565656;background:white;top:0}
+footer{padding:6px;bottom:0;border-top:1px solid #aaa}
 
-button{border:1px solid white;color:#878787;background:none;font-size:14px;border-radius:4px;padding:6px 12px;margin-left:6px;}
-button:hover{border:1px solid #e7302d;color:#e7302d;cursor:pointer;}
+button{border:1px solid white;color:#878787;background:none;font-size:14px;border-radius:4px;padding:6px 12px;margin-right:12px;}
+button:hover{border:1px solid #e7302d;color:#e7302d;cursor:pointer}
+label{font-weight: 600}
 
 .content{}
 
 .field{margin-top:12px;}
-.controls{text-align:right;}
+.controls{text-align:right}
+.field button {margin-right: 0}
 
-#config{position:relative;top:-270px;left:auto;width:350px;z-index:99;border:1px solid black;border-top:none;border-radius:0 0 8px 8px;
-padding:16px;padding-bottom:12px;margin:0 auto;
--webkit-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.6);
--moz-box-shadow:    3px 3px 7px 0px rgba(50, 50, 50, 0.6);
-box-shadow:         3px 3px 7px 0px rgba(50, 50, 50, 0.6);}
+#config{position:relative;top:-270px;left:auto;width:325px;z-index:99;border:1px solid black;border-top:none;border-radius:0 0 8px 8px;
+padding:6px 16px 12px 16px;margin:0 auto;
+-webkit-box-shadow:3px 3px 7px 0px rgba(50, 50, 50, 0.6);
+        box-shadow:3px 3px 7px 0px rgba(50, 50, 50, 0.6);
+background:white;z-index:999}
 
 #config p{font-size:12px;color:#878787;margin:0;}
 #config input{width:99%;}
 #config h3{margin-top:24px;}
 
+#results {position:absolute;z-index:888;top:55px}
+#results ul{overflow: auto;width: 348px;
+height: 360px;list-style:none;padding-left:12px;border-top: 1px solid #aaa;
+margin:0}
+#results li {font-size:16px;padding:3px 0}
+
+.site_name{font-size:24px;font-weight:600;margin:6px 0;color:#555}
+#results .site_name{margin-left:12px}
 
 .slidedown, .slideup{
   -webkit-animation: animationFramesDown ease-in-out .5s;

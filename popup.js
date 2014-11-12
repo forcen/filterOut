@@ -1,21 +1,21 @@
-
-
+/**
+ * the popup is created new each time it opens
+ */
 window.onload = function () {
-    /*
-    var elHeader = document.getElementsByTagName("header");
-    elHeader[0].innerHTML = chrome.extension.getBackgroundPage().strCurDomain;
-	*/
+    $(".site_name").setText(chrome.extension.getBackgroundPage().strCurDomain);
+
+    $('#btn_about').on('click', function () {
+        $('#results ul').empty();
+    });
 
 	// animation tests
-	document.querySelector('#btn_config').addEventListener('click', function () {
-		var element = document.querySelector('#config');
-			element.classList.add('slidedown');
-			element.classList.remove('slideup');
+	$('#btn_config').on('click', function () {
+		$('#config').addClass('slidedown').removeClass('slideup');
 	});
 
-	document.querySelector('#btn_cancel').addEventListener('click', function () {
-		var element = document.querySelector('#config');
-			element.classList.add('slideup');
-			element.classList.remove('slidedown');
+	$('#btn_cancel').on('click', function () {
+		$('#config').addClass('slideup').removeClass('slidedown');
 	});
+
+
 };
