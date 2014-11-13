@@ -20,6 +20,11 @@ window.onload = function () {
         });
     }
 
+    // event handler
+    $('#results ul').on('click', function (e) {
+        console.log(e.target.textContent);
+    });
+
 	// config panel
 	$('#btn_config').on('click', function () {
 		$('#config').addClass('slidedown').removeClass('slideup');

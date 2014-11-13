@@ -6,14 +6,21 @@ if (window === top) {
 
 // once the page is loaded I process the content
 // to look for pieces
+// 
+// this will be refactored: all config info must be in background.js
+// and here I only get the object for the url in the tab, instead of the url
 var objConfig =  {
         'eldiario.es': {
                         target: '.md-day-pinture-item .byline, .byline a',
-                        container: ''
+                        container: '',
+                        filtered: [],
+                        debug: true
                     },
         'elconfidencial.com': {
                         target: 'span .signature',
-                        container: ''
+                        container: '',
+                        filtered: [],
+                        debug: true
                     }
     },
 
@@ -28,8 +35,9 @@ var objConfig =  {
 
             $(objConfig[strURL].target).forEach(function(element){
                 objResult.results.pushUnique(element.textContent.trim());
-                // temp, for debugging purposes
-                element.style.outline="3px solid red";
+                if(objConfig[strURL].debug) {
+                    element.style.outline="3px solid red";
+                }
             });
         }
         return objResult;
