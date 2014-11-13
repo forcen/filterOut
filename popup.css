@@ -23,11 +23,13 @@ background:white;z-index:999}
 #config input{width:99%;}
 #config h3{margin-top:24px;}
 
+.no_config{display:none}
+
 #results {position:absolute;z-index:888;top:55px}
 #results ul{overflow: auto;width: 348px;
 height: 360px;list-style:none;padding-left:12px;border-top: 1px solid #aaa;
 margin:0}
-#results li {font-size:16px;padding:3px 0}
+#results li {font-size:16px;padding:6px 0}
 
 .site_name{font-size:24px;font-weight:600;margin:6px 0;color:#555}
 #results .site_name{margin-left:12px}

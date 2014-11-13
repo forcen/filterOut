@@ -4,7 +4,7 @@
 
 // Global accessor used by the popup.
 var strCurDomain = null,
-    arrResults = [];
+    arrResults = {};
 
 function getDomainName (strURL) {
     var arrURL = strURL.split('/'),
@@ -19,13 +19,29 @@ function getDomainName (strURL) {
     return arrDomain.join('.');
 }
 
+function callContentScript (tabId) {
+    chrome.tabs.sendMessage(tabId,
+                            {url: strCurDomain},
+                            function(response) {
+                                if(response.noconfig) {
+
+                                } else {
+                                    arrResults[strCurDomain] = response.results ?
+                                                 response.results.sort(function (a, b) { return a.localeCompare(b); }) :
+                                                 [];
+                                }
+                            });
+}
+
 /**
  * keep the strCurDomain param updated using this three methods
  */
 chrome.windows.onFocusChanged.addListener(function (windowId) {
-    chrome.tabs.getSelected(windowId, function (tab) {
-        strCurDomain = getDomainName(tab.url);
-    });
+    if(windowId > -1) {
+        chrome.tabs.getSelected(windowId, function (tab) {
+            strCurDomain = getDomainName(tab.url);
+        });
+    }
 });
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
@@ -41,15 +57,12 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
     if (change.status === "complete") {
-        chrome.tabs.sendMessage(tabId,
-                                {url: strCurDomain},
-                                function(response) {
-                                    arrResults = response ?
-                                                 response.sort(function (a, b) {
-                                                                        return a.localeCompare(b);
-                                                                    }) :
-                                                 [];
-                                });
-        // then 
+        callContentScript(tabId);
     }
 });
+
+/*
+chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+   callContentScript(tabs[0].id);
+});
+*/

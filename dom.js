@@ -52,6 +52,9 @@
     	},
 
     	append: function (objContent) {
+            // analize objContent to determine if it's a tag,
+            
+            
             this.each(function (element) {
                 element.appendChild(objContent);
             });
@@ -207,6 +210,8 @@
 		});
 		return this;
     };
+
+    domLib.fn.forEach = domLib.fn.each;
 
 	// override any $
 	window.$ = domLib;

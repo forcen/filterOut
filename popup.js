@@ -2,21 +2,25 @@
  * the popup is created new each time it opens
  */
 window.onload = function () {
+    var strCurDomain = chrome.extension.getBackgroundPage().strCurDomain ||'Loading content...',
+        arrResults = chrome.extension.getBackgroundPage().arrResults[strCurDomain] || [],
+        objResults = $('#results ul'),
+        eleList = objResults.first();
 
-    debugger
-    
-    var arrResults = chrome.extension.getBackgroundPage().arrResults,
-        objResults = $('#results ul');
-
-    $(".site_name").setText(chrome.extension.getBackgroundPage().strCurDomain);
+    $(".site_name").setText(strCurDomain);
     objResults.empty();
     
-    arrResults.forEach(function(strTargetContent) {
-        objResults.append('<li>' + strTargetContent + '</li>');
-    });
+    if(arrResults.length) {
+        arrResults.forEach(function(strTargetContent) {
+            var elementContent = document.createTextNode(strTargetContent),
+                element = document.createElement('li');
 
+            element.appendChild(elementContent);
+            eleList.appendChild(element);
+        });
+    }
 
-	// animation tests
+	// config panel
 	$('#btn_config').on('click', function () {
 		$('#config').addClass('slidedown').removeClass('slideup');
 	});
@@ -24,6 +28,4 @@ window.onload = function () {
 	$('#btn_cancel').on('click', function () {
 		$('#config').addClass('slideup').removeClass('slidedown');
 	});
-
-
 };
