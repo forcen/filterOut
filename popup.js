@@ -1,32 +1,49 @@
 /**
- * the popup is created new each time it opens
+ * the popup is created new each time it opens. 
+ * the only persistence is in the background code.
  */
 window.onload = function () {
     var objBackground = chrome.extension.getBackgroundPage(),
-        strCurDomain = objBackground.strCurDomain ||'Loading content...',
+        strCurDomain = objBackground.strCurDomain || 'Loading content...',
         arrResults = objBackground.arrResults[strCurDomain] || [],
         objResults = $('#results ul'),
-        eleList = objResults.first();
+        eleList = objResults.first(),
+        objConfig = objBackground.objConfig[strCurDomain];
 
     $(".site_name").setText(strCurDomain);
     objResults.empty();
     
-    if(arrResults.length) {
-        $('.no_config').hide();
-        arrResults.forEach(function(strTargetContent) {
-            var elementContent = document.createTextNode(strTargetContent),
-                element = document.createElement('li');
-
-            element.appendChild(elementContent);
-            eleList.appendChild(element);
-        });
-    } else {
+    if(!objConfig) {
         $('.no_config').show();
+    } else {
+        $('.no_config').hide();
+
+        console.log(objConfig);
+
+        if(arrResults.length) {
+            arrResults.forEach(function(strTargetContent) {
+                var elementContent = document.createTextNode(strTargetContent),
+                    element = document.createElement('li');
+
+                element.appendChild(elementContent);
+                if(objConfig.filtered.contains(strTargetContent)) {
+                    element.classList.add('filtered_out');
+                }
+                eleList.appendChild(element);
+            });
+        }
     }
 
     // event handler
     $('#results ul').on('click', function (e) {
-        console.log(strCurDomain)
+        var element = e.target;
+
+        if(element.classList.contains('filtered_out')) {
+            element.classList.remove('filtered_out');
+        } else {
+            element.classList.add('filtered_out');
+        }
+
         objBackground.toggleContent(strCurDomain, e.target.textContent);
     });
 
