@@ -4,8 +4,8 @@ if (window === top) {
             case 'init':
                 sendResponse(processPage(req.config));
                 break;
-            case 'toogle':
-                sendResponse('');
+            case 'filter':
+                sendResponse(filterOut(req.config));
                 break;
         }
     });
@@ -15,27 +15,25 @@ if (window === top) {
 // to look for pieces
 // 
 var processPage = function(objConfig) {
-        var objResult = {
-                            noconfig: true,
+        var objResult = {   // an object for historical reasons.
                             results: []
                         };
 
-        // not needed anymore. check before destroy and change objResult
-        //objResult.noconfig = false;
-
-        console.log(objConfig);
-        
-        // this part 
+        // we call this same method at startup and when toggling
+        if(objConfig.debug) {
+            $('.filterout-debug').removeClass('filterout-debug');
+        }
         $(objConfig.target).forEach(function(element){
             objResult.results.pushUnique(element.textContent.trim());
             if(objConfig.debug) {
-                element.style.outline="3px solid red";
+                element.classList.add('filterout-debug');
+                //element.style.outline="3px solid red";
             }
         });
 
         return objResult;
     },
 
-    filterContent = function() {
+    filterOut = function(objConfig) {
 
     };

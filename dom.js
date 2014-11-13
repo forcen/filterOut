@@ -9,21 +9,24 @@
 
     // constructor
 	var domLib = function(strSelector, elementContext) {
-			return new DOMLib(strSelector, elementContext || document);
-		},
+            return new DOMLib(strSelector, elementContext || document);
+        },
 
 		DOMLib = function (strSelector, elementContext) {
-			var objElements = elementContext.querySelectorAll(strSelector),
-				i = 0,
-				len = objElements.length;
+            if(typeof strSelector === 'string') {
+    			var objElements = elementContext.querySelectorAll(strSelector),
+    				i = 0,
+    				len = objElements.length;
 
-			for (; i < objElements.length; i++) {
-				this[i] = objElements[i];
-			}
-            // 'this' is not an array
-			this.length = objElements.length;
-
-			return this;
+    			for (; i < objElements.length; i++) {
+    				this[i] = objElements[i];
+    			}
+                // 'this' is not an array
+    			this.length = objElements.length;
+            } else if(strSelector instanceof Element) {
+                this[0] = strSelector;
+                this.length = 1;
+            }
 		};
 
 	// attach prototype to .fn and start the party.
@@ -53,8 +56,6 @@
 
     	append: function (objContent) {
             // analize objContent to determine if it's a tag,
-            
-            
             this.each(function (element) {
                 element.appendChild(objContent);
             });
@@ -79,12 +80,13 @@
         },
 
         parent: function (strSelector) {
-            var element;
-            
+            var element = this[0];
+
             while(element.parentNode) {
                 //display, log or do what you want with element
                 element = element.parentNode;
             }
+            return element;
         },
 
     	/**
@@ -122,15 +124,14 @@
     		}
     	},
 
-    	val: function (strVal) {
-    		var value;
-
-    		if(objData) {
-
+    	val: function (value) {
+    		if(value !== undefined) {
+                this.each(function (element) {
+                    element.value = value;
+                });
     			return this;
     		} else {
-
-    			return value;
+    			return this[0] ? this[0].value : undefined;
     		}
     	},
 

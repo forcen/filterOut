@@ -18,8 +18,7 @@ window.onload = function () {
     } else {
         $('.no_config').hide();
 
-        console.log(objConfig);
-
+        // fill results list
         if(arrResults.length) {
             arrResults.forEach(function(strTargetContent) {
                 var elementContent = document.createTextNode(strTargetContent),
@@ -27,32 +26,49 @@ window.onload = function () {
 
                 element.appendChild(elementContent);
                 if(objConfig.filtered.contains(strTargetContent)) {
-                    element.classList.add('filtered_out');
+                    $(element).addClass('filterout-selected');
                 }
                 eleList.appendChild(element);
             });
         }
+
+        // fill config panel
+        $('#target').val(objConfig.target);
+        $('#container').val(objConfig.container);
+
     }
 
     // event handler
     $('#results ul').on('click', function (e) {
         var element = e.target;
 
-        if(element.classList.contains('filtered_out')) {
-            element.classList.remove('filtered_out');
+        if($(element).hasClass('filterout-selected')) {
+            $(element).removeClass('filterout-selected');
         } else {
-            element.classList.add('filtered_out');
+            $(element).addClass('filterout-selected');
         }
 
-        objBackground.toggleContent(strCurDomain, e.target.textContent);
+        objBackground.callToggleContent(strCurDomain, e.target.textContent);
     });
 
-	// config panel
+	// open config panel
 	$('#btn_config').on('click', function () {
 		$('#config').addClass('slidedown').removeClass('slideup');
 	});
 
+    // close config panel
 	$('#btn_cancel').on('click', function () {
 		$('#config').addClass('slideup').removeClass('slidedown');
 	});
+
+    // modify settings and reprocess
+    $('#btn_save').on('click', function () {
+        $('#config').addClass('slideup').removeClass('slidedown');
+
+        objConfig.target = $('#target').val();
+        objConfig.container = $('#container').val();
+
+        // launch reprocessing
+        objBackground.callContentScript();
+    });
 };

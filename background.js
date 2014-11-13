@@ -34,40 +34,49 @@ function getDomainName (strURL) {
     return arrDomain.join('.');
 }
 
-function callContentScript (tabId) {
+function doContentScript (tabId, strDomain) {
     chrome.tabs.sendMessage(tabId,
                             {
                                 op: 'init',
-                                config: objConfig[strCurDomain]
+                                config: objConfig[strDomain]
                             },
                             function(response) {
                                 if(response) {
-                                    arrResults[strCurDomain] = response.results ?
+                                    arrResults[strDomain] = response.results ?
                                                                 response.results.sort(function (a, b) { return a.localeCompare(b); }) :
                                                                 [];
                                 }
                             });
 }
 
-function toggleContent (strDomain, strContent) {
+function callContentScript () {
+    chrome.tabs.query({currentWindow: true, active: true},
+                        function(tabs) {
+                            doContentScript(tabs[0].id, strCurDomain);
+                        });
+}
 
-    if(objConfig[strDomain]) {//  modify the config for this domain
+function doToggleContent (tabId, strDomain, strContent) {
     objConfig[strDomain].filtered.toggle(strContent);
-
     console.log(objConfig[strDomain]);       
 
-    // and re-process the page
-
-    /*chrome.tabs.sendMessage(tabId,
+    chrome.tabs.sendMessage(tabId,
                             {
-                                op: 'toggle',
+                                op: 'filter',
                                 config: objConfig[strDomain]
                             },
                             function(response) {
                                 
                             });
-    */
 }
+
+function callToggleContent (strDomain, strContent) {
+    if(objConfig[strDomain]) {//  modify the config for this domain
+        chrome.tabs.query({currentWindow: true, active: true},
+                            function(tabs) {
+                                doToggleContent(tabs[0].id, strDomain, strContent);
+                            });
+    }
 }
 
 /**

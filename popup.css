@@ -20,7 +20,7 @@ padding:6px 16px 12px 16px;margin:0 auto;
 background:white;z-index:999}
 
 #config p{font-size:12px;color:#878787;margin:0;}
-#config input{width:99%;}
+#config input{width:99%;font-size:14px}
 #config h3{margin-top:24px;}
 
 .no_config{display:none}
@@ -31,7 +31,7 @@ height: 360px;list-style:none;padding-left:12px;border-top: 1px solid #aaa;
 margin:0}
 #results li {font-size:16px;padding:6px 0;cursor:pointer}
 
-.filtered_out{text-decoration:line-through;color: red}
+.filterout-selected{text-decoration:line-through;color:#e7302d}
 
 .site_name{font-size:24px;font-weight:600;margin:6px 0;color:#555}
 #results .site_name{margin-left:12px}
