@@ -1,5 +1,10 @@
+/* global $, chrome */
+
+'use strict';
+
 // Global accessor used by the popup.
-var strCurDomain = null;
+var strCurDomain = null,
+    arrResults = [];
 
 function getDomainName (strURL) {
     var arrURL = strURL.split('/'),
@@ -36,13 +41,15 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
     if (change.status === "complete") {
-
+        chrome.tabs.sendMessage(tabId,
+                                {url: strCurDomain},
+                                function(response) {
+                                    arrResults = response ?
+                                                 response.sort(function (a, b) {
+                                                                        return a.localeCompare(b);
+                                                                    }) :
+                                                 [];
+                                });
+        // then 
     }
-});
-
-
-chrome.tabs.query({active: true, currentWindow: true},
-    function(tabs) {
-        strCurDomain = getDomainName(tabs[0].url);
-   //     updateAddress(tabs[0].id);
 });

@@ -82,3 +82,14 @@ Array.prototype.forEach = function (someFn) {
         }
     }
 };
+
+/**
+ * adds an element to the array only if it's not already on it.
+ * @param  {[type]} element [description]
+ * @return {[type]}         [description]
+ */
+Array.prototype.pushUnique = function (element) {
+    if(!this.contains(element)) {
+        this.push(element);
+    }
+};

@@ -2,11 +2,19 @@
  * the popup is created new each time it opens
  */
 window.onload = function () {
-    $(".site_name").setText(chrome.extension.getBackgroundPage().strCurDomain);
 
-    $('#btn_about').on('click', function () {
-        $('#results ul').empty();
+    debugger
+    
+    var arrResults = chrome.extension.getBackgroundPage().arrResults,
+        objResults = $('#results ul');
+
+    $(".site_name").setText(chrome.extension.getBackgroundPage().strCurDomain);
+    objResults.empty();
+    
+    arrResults.forEach(function(strTargetContent) {
+        objResults.append('<li>' + strTargetContent + '</li>');
     });
+
 
 	// animation tests
 	$('#btn_config').on('click', function () {

@@ -1,12 +1,22 @@
-if (window == top) {
-    chrome.extension.onRequest.addListener(function(req, sender, sendResponse) {
-        sendResponse(findMatchesForDomain(req.url));
+if (window === top) {
+    chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+        sendResponse(processPage(req.url));
     });
 }
 
-// Search the nodes with the targets for this domain
-var findMatchesForDomain = function(strURL) {
 
-    alert(strURL);
-    return;
+// once the page is loaded I process the content
+// to look for pieces
+var processPage = function(strURL) {
+    var arrResults = [],
+        strTarget = '.byline a';
+
+    [].forEach.call($(strTarget), function(element){
+        arrResults.pushUnique(element.textContent);
+        element.style.outline="3px solid red";
+    });
+
+    console.log(arrResults);
+
+    return arrResults;
 };
