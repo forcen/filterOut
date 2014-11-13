@@ -23,22 +23,31 @@ Array.prototype.contains = function (needle) {
  */
 
 /**
+ * adds or remove an element to an array
+ * @param  a element to toogle
+ */
+Array.prototype.toggle = function(a) {
+    var b = this.indexOf(a);
+    -1 === b ? this.push(a) : this.splice(b, 1); // jshint ignore: line
+};
+
+/**
  * intersects to arrays.
  * it DON'T modifies the original one
  * 
  * @param {Array} c the array to intersect with the calling one
  */
 Array.prototype.intersect = function(c) {
-  var d = [], a, b, len = this.length, len2 = c.length;
-  for (a = 0;a < len;a++) {
-    for (b = 0;b < len2;b++) {
-      if (this[a] === c[b]) {
-        d.push(a);
-        break;
-      }
+    var d = [], a, b, len = this.length, len2 = c.length;
+    for (a = 0;a < len;a++) {
+        for (b = 0;b < len2;b++) {
+            if (this[a] === c[b]) {
+                d.push(a);
+                break;
+            }
+        }
     }
-  }
-  return d;
+    return d;
 };
 
 /**
@@ -48,21 +57,21 @@ Array.prototype.intersect = function(c) {
  * @param {Array} b 
  */
 Array.prototype.exclude = function(b) {
-  var a, c, len = this.length;
-  for (a = 0;a < len;a++) {
-    c = b.indexOf(this[a]), -1 !== c && b.splice(c, 1);
-  }
-  return b;
+    var a, c, len = this.length;
+    for (a = 0;a < len;a++) {
+        c = b.indexOf(this[a]), -1 !== c && b.splice(c, 1); // jshint ignore: line
+    }
+    return b;
 };
 
 /**
  * extends the current array with the content of the one passed as param
  */
 Array.prototype.union = function(a) {
-  for (var b in a) {
-    a.hasOwnProperty(b) && (this[b] = a[b]);
-  }
-  return this;
+    for (var b in a) {
+        a.hasOwnProperty(b) && (this[b] = a[b]); // jshint ignore: line
+    }
+    return this;
 };
 
 /**

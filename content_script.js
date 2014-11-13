@@ -1,44 +1,41 @@
 if (window === top) {
     chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
-        sendResponse(processPage(req.url));
+        switch(req.op) {
+            case 'init':
+                sendResponse(processPage(req.config));
+                break;
+            case 'toogle':
+                sendResponse('');
+                break;
+        }
     });
 }
 
 // once the page is loaded I process the content
 // to look for pieces
 // 
-// this will be refactored: all config info must be in background.js
-// and here I only get the object for the url in the tab, instead of the url
-var objConfig =  {
-        'eldiario.es': {
-                        target: '.md-day-pinture-item .byline, .byline a',
-                        container: '',
-                        filtered: [],
-                        debug: true
-                    },
-        'elconfidencial.com': {
-                        target: 'span .signature',
-                        container: '',
-                        filtered: [],
-                        debug: true
-                    }
-    },
-
-    processPage = function(strURL) {
+var processPage = function(objConfig) {
         var objResult = {
                             noconfig: true,
                             results: []
                         };
 
-        if(objConfig[strURL]) {
-            objResult.noconfig = false;
+        // not needed anymore. check before destroy and change objResult
+        //objResult.noconfig = false;
 
-            $(objConfig[strURL].target).forEach(function(element){
-                objResult.results.pushUnique(element.textContent.trim());
-                if(objConfig[strURL].debug) {
-                    element.style.outline="3px solid red";
-                }
-            });
-        }
+        console.log(objConfig);
+        
+        // this part 
+        $(objConfig.target).forEach(function(element){
+            objResult.results.pushUnique(element.textContent.trim());
+            if(objConfig.debug) {
+                element.style.outline="3px solid red";
+            }
+        });
+
         return objResult;
+    },
+
+    filterContent = function() {
+
     };

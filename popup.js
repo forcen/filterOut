@@ -2,8 +2,9 @@
  * the popup is created new each time it opens
  */
 window.onload = function () {
-    var strCurDomain = chrome.extension.getBackgroundPage().strCurDomain ||'Loading content...',
-        arrResults = chrome.extension.getBackgroundPage().arrResults[strCurDomain] || [],
+    var objBackground = chrome.extension.getBackgroundPage(),
+        strCurDomain = objBackground.strCurDomain ||'Loading content...',
+        arrResults = objBackground.arrResults[strCurDomain] || [],
         objResults = $('#results ul'),
         eleList = objResults.first();
 
@@ -11,6 +12,7 @@ window.onload = function () {
     objResults.empty();
     
     if(arrResults.length) {
+        $('.no_config').hide();
         arrResults.forEach(function(strTargetContent) {
             var elementContent = document.createTextNode(strTargetContent),
                 element = document.createElement('li');
@@ -18,11 +20,14 @@ window.onload = function () {
             element.appendChild(elementContent);
             eleList.appendChild(element);
         });
+    } else {
+        $('.no_config').show();
     }
 
     // event handler
     $('#results ul').on('click', function (e) {
-        console.log(e.target.textContent);
+        console.log(strCurDomain)
+        objBackground.toggleContent(strCurDomain, e.target.textContent);
     });
 
 	// config panel

@@ -4,7 +4,22 @@
 
 // Global accessor used by the popup.
 var strCurDomain = null,
-    arrResults = {};
+    arrResults = {},
+    // again, this will be refactored to use a local database
+    objConfig =  {
+        'eldiario.es': {
+                        target: '.md-day-pinture-item .byline, .byline a',
+                        container: '',
+                        filtered: [],
+                        debug: true
+                    },
+        'elconfidencial.com': {
+                        target: 'span .signature',
+                        container: '',
+                        filtered: [],
+                        debug: true
+                    }
+    };
 
 function getDomainName (strURL) {
     var arrURL = strURL.split('/'),
@@ -21,16 +36,38 @@ function getDomainName (strURL) {
 
 function callContentScript (tabId) {
     chrome.tabs.sendMessage(tabId,
-                            {url: strCurDomain},
+                            {
+                                op: 'init',
+                                config: objConfig[strCurDomain]
+                            },
                             function(response) {
-                                if(response.noconfig) {
-
-                                } else {
+                                if(response) {
                                     arrResults[strCurDomain] = response.results ?
-                                                 response.results.sort(function (a, b) { return a.localeCompare(b); }) :
-                                                 [];
+                                                                response.results.sort(function (a, b) { return a.localeCompare(b); }) :
+                                                                [];
                                 }
                             });
+}
+
+function toggleContent (strDomain, strContent) {
+
+    if(objConfig[strDomain]) {//  modify the config for this domain
+    objConfig[strDomain].filtered.toggle(strContent);
+
+    console.log(objConfig[strDomain]);       
+
+    // and re-process the page
+
+    /*chrome.tabs.sendMessage(tabId,
+                            {
+                                op: 'toggle',
+                                config: objConfig[strDomain]
+                            },
+                            function(response) {
+                                
+                            });
+    */
+}
 }
 
 /**
@@ -56,7 +93,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
  */
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
-    if (change.status === "complete") {
+    if (objConfig[strCurDomain] && change.status === "complete") {
         callContentScript(tabId);
     }
 });
