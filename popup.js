@@ -35,7 +35,6 @@ window.onload = function () {
         // fill config panel
         $('#target').val(objConfig.target);
         $('#container').val(objConfig.container);
-
     }
 
     // event handler
@@ -53,13 +52,25 @@ window.onload = function () {
 
 	// open config panel
 	$('#btn_config').on('click', function () {
+        $('#about').addClass('slideup').removeClass('slidedown');
 		$('#config').addClass('slidedown').removeClass('slideup');
 	});
+
+    // open about panel
+    $('#btn_about').on('click', function () {
+        $('#config').addClass('slideup').removeClass('slidedown');
+        $('#about').addClass('slidedown').removeClass('slideup');
+    });
 
     // close config panel
 	$('#btn_cancel').on('click', function () {
 		$('#config').addClass('slideup').removeClass('slidedown');
 	});
+
+    // close config panel
+    $('#btn_close').on('click', function () {
+        $('#about').addClass('slideup').removeClass('slidedown');
+    });
 
     // modify settings and reprocess
     $('#btn_save').on('click', function () {

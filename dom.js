@@ -29,7 +29,6 @@
             }
 		};
 
-	// attach prototype to .fn and start the party.
 	domLib.fn = DOMLib.prototype = {
 		each: function (someFn) {
 		    for (var i = 0, len = this.length; i < len; i++) {
@@ -212,6 +211,7 @@
 		return this;
     };
 
+    // an alias
     domLib.fn.forEach = domLib.fn.each;
 
 	// override any $
