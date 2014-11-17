@@ -27,7 +27,6 @@ var processPage = function(objConfig) {
             objResult.results.pushUnique(element.textContent.trim());
             if(objConfig.debug) {
                 element.classList.add('filterout-debug');
-                //element.style.outline="3px solid red";
             }
         });
 
@@ -35,5 +34,18 @@ var processPage = function(objConfig) {
     },
 
     filterOut = function(objConfig) {
+        var arrFiltered = objConfig.filtered,
+            arrTargets = objConfig.target.split(',');
 
+        if(arrFiltered.length && objConfig.container) {
+            $(objConfig.container).forEach(function(element){
+                arrTargets.forEach(function (strTarget) {
+                    var elemTarget = $(strTarget, element);
+
+                    if(elemTarget.length && arrFiltered.contains($(elemTarget.first()).getText().trim())) {
+                        element.remove();
+                    }
+                });
+            });
+        }
     };

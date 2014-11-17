@@ -9,7 +9,7 @@ var strCurDomain = null,
     objConfig =  {
         'eldiario.es': {
                         target: '.md-day-pinture-item .byline, .byline a',
-                        container: '',
+                        container: '.md-news-main',
                         filtered: [],
                         debug: true
                     },
@@ -58,7 +58,6 @@ function callContentScript () {
 
 function doToggleContent (tabId, strDomain, strContent) {
     objConfig[strDomain].filtered.toggle(strContent);
-    console.log(objConfig[strDomain]);       
 
     chrome.tabs.sendMessage(tabId,
                             {
@@ -104,11 +103,14 @@ chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
     if (objConfig[strCurDomain] && change.status === "complete") {
         callContentScript(tabId);
+        callToggleContent(tabId);
     }
 });
 
-/*
+/**
+ * call on loading the page for the first time
+ */
 chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
    callContentScript(tabs[0].id);
+   callToggleContent(tabs[0].id);
 });
-*/
