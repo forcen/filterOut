@@ -41,7 +41,6 @@ var processPage = function(objConfig) {
                 element.classList.add('filterout-debug');
             }
         });
-
         return objResult;
     },
 

@@ -28,7 +28,7 @@ function loadI18nMessages() {
 
 window.onload = function () {
     var objBackground = chrome.extension.getBackgroundPage(),
-        strCurDomain = objBackground.strCurDomain || 'Loading content...',
+        strCurDomain = objBackground.strCurDomain || chrome.i18n.getMessage('loading'),
         arrResults = objBackground.arrResults[strCurDomain] || [],
         objResults = $('#results ul'),
         eleList = objResults.first(),
@@ -107,6 +107,7 @@ window.onload = function () {
     $('#btn_save').on('click', function () {
         $('#config').addClass('slideup').removeClass('slidedown');
 
+        // update config with new values
         objConfig.target = $('#target').val();
         objConfig.container = $('#container').val();
 

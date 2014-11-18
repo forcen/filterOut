@@ -60,5 +60,10 @@
     "no_config": {
         "message": "No hay configuración para esta página.",
         "description": ""
+    },
+
+    "loading": {
+        "message": "Loading content...",
+        "description": ""
     }
 }

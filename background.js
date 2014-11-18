@@ -90,10 +90,14 @@ function doProcessPage (tabId) {
                                     config: objConfig[strCurDomain]
                                 },
                                 function(response) {
+                                    var numTargets;
+
                                     if(response) {
+                                        numTargets = response.results ? response.results.length : 0;
                                         arrResults[strCurDomain] = response.results ?
                                                                     response.results.sort(function (a, b) { return a.localeCompare(b); }) :
                                                                     [];
+                                        setBadge(tabId);
                                     }
                                 });
     }
@@ -115,6 +119,20 @@ function doFilterOut (tabId) {
 }
 
 /**
+ * sets the number of possible targets in the badge
+ * @param {Number} tabId restrict the change to current tab
+ */
+function setBadge (tabId) {
+    chrome.browserAction
+                .setBadgeText({
+                                text: arrResults[strCurDomain]
+                                        ? arrResults[strCurDomain].length.toString()
+                                        : '0',
+                                tabId: tabId
+                            });
+}
+
+/**
  * the set of listeners that we need to be able to automatically 
  * process the pages when the user creates a window, reloads or activates a tab.
  */
@@ -122,6 +140,7 @@ chrome.windows.onFocusChanged.addListener(function (windowId) {
     if(windowId > -1) {
         chrome.tabs.getSelected(windowId, function (tab) {
             strCurDomain = getDomainName(tab.url);
+            setBadge(tab.id);
         });
     }
 });
@@ -129,6 +148,7 @@ chrome.windows.onFocusChanged.addListener(function (windowId) {
 chrome.tabs.onActivated.addListener(function(activeInfo) {
     chrome.tabs.get(activeInfo.tabId, function (tab) {
         strCurDomain = getDomainName(tab.url);
+        setBadge(tab.id);
     });
 });
 
@@ -138,6 +158,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
  */
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
+    setBadge();
     if (objConfig[strCurDomain] && change.status === "complete") {
         callFullProcess();
     }

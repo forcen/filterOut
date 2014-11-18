@@ -83,6 +83,7 @@ Array.prototype.union = function(a) {
  * the index of the item plus the array itself.
  *
  * You can break from the function by returning false on your function.
+ * You can _really_ break it by not passing a proper function as a param.
  */
 Array.prototype.forEach = function (someFn) {
     for (var i = 0, len = this.length; i < len; i++) {
