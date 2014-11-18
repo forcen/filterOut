@@ -5,16 +5,22 @@
 // Global accessor used by the popup.
 var strCurDomain = null,
     arrResults = {},
-    // again, this will be refactored to use a local database
+    // this will be refactored to use a local database
     objConfig =  {
         'eldiario.es': {
                         target: '.md-day-pinture-item .byline, .byline a',
-                        container: '.md-news-main',
+                        container: '.md-news-main, .md-day-pinture-item, .lst-item',
                         filtered: [],
                         debug: true
                     },
         'elconfidencial.com': {
                         target: 'span .signature',
+                        container: '.article',
+                        filtered: [],
+                        debug: true
+                    },
+        'infojobs.com': {
+                        target: '',
                         container: '',
                         filtered: [],
                         debug: true
@@ -32,6 +38,10 @@ function getDomainName (strURL) {
     }
 
     return arrDomain.join('.');
+}
+
+function callFullProcess() {
+    callContentScript();
 }
 
 function doContentScript (tabId, strDomain) {
@@ -70,7 +80,7 @@ function doToggleContent (tabId, strDomain, strContent) {
 }
 
 function callToggleContent (strDomain, strContent) {
-    if(objConfig[strDomain]) {//  modify the config for this domain
+    if(objConfig[strDomain]) {
         chrome.tabs.query({currentWindow: true, active: true},
                             function(tabs) {
                                 doToggleContent(tabs[0].id, strDomain, strContent);

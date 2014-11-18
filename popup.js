@@ -2,6 +2,30 @@
  * the popup is created new each time it opens. 
  * the only persistence is in the background code.
  */
+
+function loadI18nMessages() {
+    function setProperty(selector, prop, msg) {
+        document.querySelector(selector)[prop] = chrome.i18n.getMessage(msg);
+    }
+
+    setProperty('title', 'innerText', 'popupTitle');
+    setProperty('#btn_about', 'innerText', 'btnAbout');
+    setProperty('#btn_config', 'innerText', 'btnConfig');
+    setProperty('.no_config', 'innerText', 'no_config');
+
+    setProperty('.config_title', 'innerText', 'config_title');
+    setProperty('.config_target label', 'innerText', 'config_target_label');
+    setProperty('.config_target p', 'innerText', 'config_target_hint');
+    setProperty('.config_container label', 'innerText', 'config_container_label');
+    setProperty('.config_container p', 'innerText', 'config_container_hint');
+
+    setProperty('#btn_cancel', 'innerText', 'btnCancel');
+    setProperty('#btn_save', 'innerText', 'btnSave');
+
+    setProperty('#about p', 'innerText', 'about_text');
+    setProperty('#btn_close', 'innerText', 'btnSave');
+}
+
 window.onload = function () {
     var objBackground = chrome.extension.getBackgroundPage(),
         strCurDomain = objBackground.strCurDomain || 'Loading content...',
@@ -11,6 +35,7 @@ window.onload = function () {
         objConfig = objBackground.objConfig[strCurDomain];
 
     $(".site_name").setText(strCurDomain);
+    loadI18nMessages();
     objResults.empty();
     
     if(!objConfig) {
@@ -80,6 +105,6 @@ window.onload = function () {
         objConfig.container = $('#container').val();
 
         // launch reprocessing
-        objBackground.callContentScript();
+        objBackground.callFullProcess();
     });
 };
