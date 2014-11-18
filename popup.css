@@ -3,7 +3,8 @@ header, footer{position:absolute;background:white;z-index:100;width:100%;z-index
 header{padding:12px;padding-bottom:4px;border-bottom:1px solid #565656;background:white;top:0}
 footer{padding:6px;bottom:0;border-top:1px solid #aaa}
 
-button{border:1px solid white;color:#878787;background:none;font-size:14px;border-radius:4px;padding:6px 12px;margin-right:12px;}
+button{border:1px solid white;color:#888;background:none;font-size:14px;border-radius:4px;
+	padding:6px 12px;margin-right:12px;}
 button:hover{border:1px solid #e7302d;color:#e7302d;cursor:pointer}
 label{font-weight: 600}
 
@@ -13,24 +14,25 @@ label{font-weight: 600}
 .controls{text-align:right}
 .field button {margin-right: 0}
 
-#config, #about{position:absolute;top:-270px;left:auto;width:325px;z-index:99;border:1px solid #555;border-top:none;border-radius:0 0 8px 8px;
-padding:6px 16px 12px 16px;margin:0 auto;
--webkit-box-shadow:3px 3px 7px 0px rgba(50, 50, 50, 0.6);
-        box-shadow:3px 3px 7px 0px rgba(50, 50, 50, 0.6);
-background:white;z-index:999}
+#config, #about{position:absolute;top:-300px;left:auto;width:325px;z-index:99;
+	border:1px solid #555;border-top:none;border-radius:0 0 8px 8px;padding:6px 16px 12px 16px;
+	margin:0 auto;
+	-webkit-box-shadow:3px 3px 7px 0px rgba(50, 50, 50, 0.6);
+    	    box-shadow:3px 3px 7px 0px rgba(50, 50, 50, 0.6);
+	background:white;z-index:999}
 
-#config p{font-size:12px;color:#878787;margin:0;}
+#config p{font-size:12px;color:#888;margin:0;}
 #config input{width:99%;font-size:14px}
 #config h3{margin-top:24px;}
 
 #about>p{margin-top:32px;font-size:16px}
 
-.no_config{display:none}
+.no_config{display:none;text-align:center;color:#666;font-size:14px;font-weight:600;
+	border-top:1px solid #aaa;margin:0;padding:12px 0;background:rgb(255, 223, 223)}
 
 #results {position:absolute;z-index:888;top:55px}
-#results ul{overflow: auto;width: 348px;
-height: 360px;list-style:none;padding-left:12px;border-top: 1px solid #aaa;
-margin:0}
+#results ul{overflow: auto;width: 348px;height: 360px;list-style:none;padding-left:12px;
+	border-top: 1px solid #aaa;margin:0}
 #results li {font-size:16px;padding:6px 0;cursor:pointer}
 
 .filterout-selected{text-decoration:line-through;color:#e7302d}
@@ -50,10 +52,10 @@ margin:0}
 
 @-webkit-keyframes animationFramesUp {
   0% {top:35px}
-  100% {top:-270px}
+  100% {top:-300px}
 }
 
 @-webkit-keyframes animationFramesDown {
-  0% {top:-270px}
+  0% {top:-300px}
   100% {top:35px}
 }

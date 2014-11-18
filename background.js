@@ -27,69 +27,96 @@ var strCurDomain = null,
                     }
     };
 
-function getDomainName (strURL) {
-    var arrURL = strURL.split('/'),
-        arrParts = arrURL[2].split(':'),
-        arrDomain = arrParts[0].split('.');
-
-    // assume it has a subdomain.
-    if(arrDomain.length > 2) {
-       arrDomain.shift();
-    }
-
-    return arrDomain.join('.');
+function getDomainName(a) {
+    a = a.split("/")[2].split(":")[0].split(".");
+    2 < a.length && a.shift();  // jshint ignore: line
+    return a.join(".");
 }
 
+/**
+ * this methods are called both from the inteface and as a reply
+ * to chrome events
+ */
+
+/**
+ * group both functions in one single call
+ */
 function callFullProcess() {
-    callContentScript();
+    callProcessPage();
+    callFilterOut();
 }
 
-function doContentScript (tabId, strDomain) {
-    chrome.tabs.sendMessage(tabId,
-                            {
-                                op: 'init',
-                                config: objConfig[strDomain]
-                            },
-                            function(response) {
-                                if(response) {
-                                    arrResults[strDomain] = response.results ?
-                                                                response.results.sort(function (a, b) { return a.localeCompare(b); }) :
-                                                                [];
-                                }
-                            });
-}
-
-function callContentScript () {
+/**
+ * launchs the processing of the page to get targets' content to filter out
+ */
+function callProcessPage () {
     chrome.tabs.query({currentWindow: true, active: true},
                         function(tabs) {
-                            doContentScript(tabs[0].id, strCurDomain);
+                            doProcessPage(tabs[0].id, strCurDomain);
                         });
 }
 
-function doToggleContent (tabId, strDomain, strContent) {
-    objConfig[strDomain].filtered.toggle(strContent);
-
-    chrome.tabs.sendMessage(tabId,
-                            {
-                                op: 'filter',
-                                config: objConfig[strDomain]
-                            },
-                            function(response) {
-                                
-                            });
+/**
+ * launchs the real filtering ot the content
+ */
+function callFilterOut () {
+    chrome.tabs.query({currentWindow: true, active: true},
+                        function(tabs) {
+                            doFilterOut(tabs[0].id, strCurDomain);
+                        });
 }
 
-function callToggleContent (strDomain, strContent) {
-    if(objConfig[strDomain]) {
-        chrome.tabs.query({currentWindow: true, active: true},
-                            function(tabs) {
-                                doToggleContent(tabs[0].id, strDomain, strContent);
-                            });
+/**
+ * Just filter when the user selects a given content
+ * 
+ * @param  {String} strContent The content to add/remove to filtered Array
+ */
+function callToggleContent (strContent) {
+    if(objConfig[strCurDomain]) {
+        objConfig[strCurDomain].filtered.toggle(strContent);
+        callFilterOut ();
     }
 }
 
 /**
- * keep the strCurDomain param updated using this three methods
+ * calls the method that process the page and extracts possible targets
+ * @param  tabId
+ */
+function doProcessPage (tabId) {
+    if(objConfig[strCurDomain]) {
+        chrome.tabs.sendMessage(tabId,
+                                {
+                                    op: 'init',
+                                    config: objConfig[strCurDomain]
+                                },
+                                function(response) {
+                                    if(response) {
+                                        arrResults[strCurDomain] = response.results ?
+                                                                    response.results.sort(function (a, b) { return a.localeCompare(b); }) :
+                                                                    [];
+                                    }
+                                });
+    }
+}
+
+/**
+ * calls the method that filters the page based on targets, containers 
+ * and filtered content.
+ * @param  tabId
+ */
+function doFilterOut (tabId) {
+    if(objConfig[strCurDomain]) {
+        chrome.tabs.sendMessage(tabId,
+                                {
+                                    op: 'filter',
+                                    config: objConfig[strCurDomain]
+                                });
+    }
+}
+
+/**
+ * the set of listeners that we need to be able to automatically 
+ * process the pages when the user creates a window, reloads or activates a tab.
  */
 chrome.windows.onFocusChanged.addListener(function (windowId) {
     if(windowId > -1) {
@@ -112,15 +139,6 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
     if (objConfig[strCurDomain] && change.status === "complete") {
-        callContentScript(tabId);
-        callToggleContent(tabId);
+        callFullProcess();
     }
-});
-
-/**
- * call on loading the page for the first time
- */
-chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
-   callContentScript(tabs[0].id);
-   callToggleContent(tabs[0].id);
 });

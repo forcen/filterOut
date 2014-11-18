@@ -9,56 +9,56 @@
         "description": ""
     },
     "btnAbout": {
-        "message": "About",
+        "message": "Acerca de",
         "description": ""
     },
     "btnConfig": {
-        "message": "Configuration",
+        "message": "Configurar",
         "description": ""
     },
     "btnCancel": {
-        "message": "Cancel",
+        "message": "Cancelar",
         "description": ""
     },
     "btnSave": {
-        "message": "Save",
+        "message": "Guardar",
         "description": ""
     },
     "btnClose": {
-        "message": "Close",
+        "message": "Cerrar",
         "description": ""
     },
 
     "config_title": {
-        "message": "You can specify a tag, a class or a combination of both to identify both Target and Container elements.",
+        "message": "Puedes indicar un tag, una clase o una combinació de ambas para indicar tanto los Targets como los Containers.",
         "description": ""
     },
 
     "config_target_label": {
-        "message": "Target element",
+        "message": "Elemento Target",
         "description": ""
     },
     "config_target_hint": {
-        "message": "This selector helps FilterOut to find what you want to delete.",
+        "message": "Este selector ayuda a FilterOut a identificar lo que quieres buscar en la página.",
         "description": ""
     },
 
     "config_container_label": {
-        "message": "Container element",
+        "message": "Elemento Container",
         "description": ""
     },
     "config_container_hint": {
-        "message": "This selector identifies the block that contains the content to hide.",
+        "message": "Este selector identifica el bloque que delimita el contenido a ocultar.",
         "description": ""
     },
 
     "about_text": {
-        "message": "Filter the contents you don't want to see from web pages.",
+        "message": "Filtra los contenidos que no deseas ver en las páginas que visitas.",
         "description": ""
     },
 
     "no_config": {
-        "message": "There is no configuration for this site.",
+        "message": "No hay configuración para esta página.",
         "description": ""
     }
 }
