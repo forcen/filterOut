@@ -36,9 +36,9 @@ var processPage = function(objConfig) {
             $('.filterout-debug').removeClass('filterout-debug');
         }
         $(objConfig.target).forEach(function(element){
-            objResult.results.pushUnique(element.textContent.trim());
+            objResult.results.pushUnique($(element).getText().trim());
             if(objConfig.debug) {
-                element.classList.add('filterout-debug');
+                $(element).addClass('filterout-debug');
             }
         });
         return objResult;

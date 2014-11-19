@@ -38,13 +38,14 @@ function getDomainName(a) {
  * @param {Number} tabId restrict the change to current tab
  */
 function setBadge (tabId) {
-    chrome.browserAction
-                .setBadgeText({
-                                text: arrResults[strCurDomain]
-                                        ? arrResults[strCurDomain].length.toString() // jshint ignore: line
-                                        : '0',
-                                tabId: tabId
-                            });
+    chrome
+        .browserAction
+        .setBadgeText({
+                        text: arrResults[strCurDomain] ?
+                                arrResults[strCurDomain].length.toString() :
+                                '0',
+                        tabId: tabId
+                    });
 }
 
 /**
@@ -53,27 +54,35 @@ function setBadge (tabId) {
  * @return {object}           a properly configured config object
  */
 function initConfig(strDomain) {
-    return objConfigHandler.get(strDomain) || {
-                                                    target: '',
-                                                    container: '',
-                                                    filtered: [],
-                                                    debug: true
-                                                };
-}
-
-/**
- * isolate objConfigHandler from popup
- * @param  {String} strDomain
- * @param  {Object} objConfig 
- */
-function saveConfig(strDomain, objConfig) {
-    objConfigHandler.set(strDomain, objConfig);
+    return objConfigHandler
+                .get(strDomain) || {
+                                        target: '',
+                                        container: '',
+                                        filtered: [],
+                                        debug: true
+                                    };
 }
 
 /**
  * this methods are called both from the inteface and as a reply
  * to chrome events
  */
+
+/**
+ * save configuration when modified in popup
+ * @param  {String} strDomain
+ * @param  {String} strTarget
+ * @param  {String} strContainer
+ */
+function callSaveConfig(strDomain, strTarget, strContainer) {
+    var objLocalConfig = initConfig(strDomain);
+
+    objLocalConfig.target = strTarget;
+    objLocalConfig.container = strContainer;
+
+    objConfigHandler.set(strDomain, objLocalConfig);
+    callFullProcess();   
+}
 
 /**
  * group both functions in one single call
@@ -122,22 +131,26 @@ function callToggleContent (strContent) {
  */
 function doProcessPage (tabId) {
     if(objConfig[strCurDomain]) {
-        chrome.tabs.sendMessage(tabId,
-                                {
-                                    op: 'init',
-                                    config: objConfig[strCurDomain]
-                                },
-                                function(response) {
-                                    var numTargets;
+        chrome
+            .tabs
+            .sendMessage(tabId,
+                        {
+                            op: 'init',
+                            config: objConfig[strCurDomain]
+                        },
+                        function(response) {
+                            var numTargets;
 
-                                    if(response) {
-                                        numTargets = response.results ? response.results.length : 0;
-                                        arrResults[strCurDomain] = response.results ?
-                                                                    response.results.sort(function (a, b) { return a.localeCompare(b); }) :
-                                                                    [];
-                                        setBadge(tabId);
-                                    }
-                                });
+                            if(response) {
+                                numTargets = response.results ?
+                                                response.results.length :
+                                                0;
+                                arrResults[strCurDomain] = response.results ?
+                                                            response.results.sort(function (a, b) { return a.localeCompare(b); }) :
+                                                            [];
+                                setBadge(tabId);
+                            }
+                        });
     }
 }
 
@@ -148,11 +161,13 @@ function doProcessPage (tabId) {
  */
 function doFilterOut (tabId) {
     if(objConfig[strCurDomain]) {
-        chrome.tabs.sendMessage(tabId,
-                                {
-                                    op: 'filter',
-                                    config: objConfig[strCurDomain]
-                                });
+        chrome
+            .tabs
+            .sendMessage(tabId,
+                        {
+                            op: 'filter',
+                            config: objConfig[strCurDomain]
+                        });
     }
 }
 

@@ -31,8 +31,8 @@ window.onload = function () {
         strCurDomain = objBackground.strCurDomain || chrome.i18n.getMessage('loading'),
         arrResults = objBackground.arrResults[strCurDomain] || [],
         objResults = $('#results ul'),
-        eleList = objResults.first(),
-        objConfig = objBackground.objConfig[strCurDomain];
+        objConfig = objBackground.objConfig[strCurDomain],
+        eleListContent = document.createDocumentFragment();
 
     $(".site_name").setText(strCurDomain);
     loadI18nMessages();
@@ -55,8 +55,9 @@ window.onload = function () {
                 if(objConfig.filtered.contains(strTargetContent)) {
                     $(element).addClass('filterout-selected');
                 }
-                eleList.appendChild(element);
+                eleListContent.appendChild(element);
             });
+            objResults.first().appendChild(eleListContent);
         }
 
         // fill config panel
@@ -64,7 +65,10 @@ window.onload = function () {
         $('#container').val(objConfig.container);
     }
 
-    // event handler
+    /**
+     * event handlers
+     */
+    // list click handler
     $('#results ul').on('click', function (e) {
         var element = e.target;
 
@@ -106,18 +110,9 @@ window.onload = function () {
     // modify settings and reprocess
     $('#btn_save').on('click', function () {
         $('#config').addClass('slideup').removeClass('slidedown');
-
-        // reads stored or returns a new one
-        objConfig = objBackground.initConfig(strCurDomain);
-
-        // update config with new values
-        objConfig.target = $('#target').val();
-        objConfig.container = $('#container').val();
-
-        // and save it
-        objBackground.saveConfig(strCurDomain, objConfig);
-
-        // launch reprocessing
-        objBackground.callFullProcess();
+        $('.no_config').hide();
+        objBackground.callSaveConfig(strCurDomain,
+                                        $('#target').val(),
+                                        $('#container').val());
     });
 };
