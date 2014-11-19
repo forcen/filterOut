@@ -11,7 +11,8 @@ function loadI18nMessages() {
     setProperty('title', 'innerText', 'popupTitle');
     setProperty('#btn_about', 'innerText', 'btnAbout');
     setProperty('#btn_config', 'innerText', 'btnConfig');
-    setProperty('.no_config', 'innerText', 'no_config');
+    setProperty('#no_config', 'innerText', 'no_config');
+    setProperty('#reload', 'innerText', 'reload');
 
     setProperty('.config_title', 'innerText', 'config_title');
     setProperty('.config_target label', 'innerText', 'config_target_label');
@@ -53,7 +54,7 @@ window.onload = function () {
 
                 element.appendChild(elementContent);
                 if(objConfig.filtered.contains(strTargetContent)) {
-                    $(element).addClass('filterout-selected');
+                    $(element).addClass('target-selected');
                 }
                 eleListContent.appendChild(element);
             });
@@ -72,10 +73,11 @@ window.onload = function () {
     $('#results ul').on('click', function (e) {
         var element = e.target;
 
-        if($(element).hasClass('filterout-selected')) {
-            $(element).removeClass('filterout-selected');
+        if($(element).hasClass('target-selected')) {
+            $(element).removeClass('target-selected');
+            $('#reload').show();
         } else {
-            $(element).addClass('filterout-selected');
+            $(element).addClass('target-selected');
         }
 
         objBackground.callToggleContent(e.target.textContent);
@@ -111,8 +113,13 @@ window.onload = function () {
     $('#btn_save').on('click', function () {
         $('#config').addClass('slideup').removeClass('slidedown');
         $('.no_config').hide();
+
         objBackground.callSaveConfig(strCurDomain,
                                         $('#target').val(),
                                         $('#container').val());
+    });
+
+    $('#reload').on('click', function () {
+        objBackground.callReload();
     });
 };

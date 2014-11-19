@@ -126,6 +126,13 @@ function callToggleContent (strContent) {
 }
 
 /**
+ * reloads the page so the content unfiltered will be loaded again
+ */
+function callReload () {
+    chrome.tabs.reload();
+}
+
+/**
  * calls the method that process the page and extracts possible targets
  * @param  tabId
  */

@@ -62,6 +62,11 @@
         "description": ""
     },
 
+    "reload": {
+        "message": "Reload the page to see changes",
+        "description": ""
+    },
+
     "loading": {
         "message": "Loading content...",
         "description": ""
