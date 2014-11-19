@@ -1,36 +1,73 @@
-/* global $, chrome */
+/* global $, chrome, console, localStorage */
 
 'use strict';
 
 // Global accessor used by the popup.
 var strCurDomain = null,
     arrResults = {},
-    // this will be refactored to use a local database
-    objConfig =  {
-        'eldiario.es': {
-                        target: '.md-day-pinture-item .byline, .byline a',
-                        container: '.md-news-main, .md-day-pinture-item, .lst-item',
-                        filtered: [],
-                        debug: true
-                    },
-        'elconfidencial.com': {
-                        target: 'span .signature',
-                        container: '.article',
-                        filtered: [],
-                        debug: true
-                    },
-        'infojobs.com': {
-                        target: '',
-                        container: '',
-                        filtered: [],
-                        debug: true
-                    }
+    objConfig = {},
+
+    // local storage handling object
+    objConfigHandler = {
+        get: function (strDomain) {
+            return JSON.parse(localStorage.getItem(strDomain));
+        },
+
+        set: function (strDomain, objConfig) {
+            localStorage.setItem(strDomain, JSON.stringify(objConfig));
+        }
     };
 
+/**
+ * utils
+ */
+
+/**
+ * gets the domain part from the passed url
+ * @param  {String}     a an url
+ * @return {String}     just the domain part of the url
+ */
 function getDomainName(a) {
     a = a.split("/")[2].split(":")[0].split(".");
     2 < a.length && a.shift();  // jshint ignore: line
     return a.join(".");
+}
+
+/**
+ * sets the number of possible targets in the badge
+ * @param {Number} tabId restrict the change to current tab
+ */
+function setBadge (tabId) {
+    chrome.browserAction
+                .setBadgeText({
+                                text: arrResults[strCurDomain]
+                                        ? arrResults[strCurDomain].length.toString() // jshint ignore: line
+                                        : '0',
+                                tabId: tabId
+                            });
+}
+
+/**
+ * returns strDomain or inits a new one
+ * @param  {String} strDomain the domain
+ * @return {object}           a properly configured config object
+ */
+function initConfig(strDomain) {
+    return objConfigHandler.get(strDomain) || {
+                                                    target: '',
+                                                    container: '',
+                                                    filtered: [],
+                                                    debug: true
+                                                };
+}
+
+/**
+ * isolate objConfigHandler from popup
+ * @param  {String} strDomain
+ * @param  {Object} objConfig 
+ */
+function saveConfig(strDomain, objConfig) {
+    objConfigHandler.set(strDomain, objConfig);
 }
 
 /**
@@ -119,20 +156,6 @@ function doFilterOut (tabId) {
 }
 
 /**
- * sets the number of possible targets in the badge
- * @param {Number} tabId restrict the change to current tab
- */
-function setBadge (tabId) {
-    chrome.browserAction
-                .setBadgeText({
-                                text: arrResults[strCurDomain]
-                                        ? arrResults[strCurDomain].length.toString()
-                                        : '0',
-                                tabId: tabId
-                            });
-}
-
-/**
  * the set of listeners that we need to be able to automatically 
  * process the pages when the user creates a window, reloads or activates a tab.
  */
@@ -159,6 +182,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
     strCurDomain = getDomainName(tab.url);
     setBadge();
+    objConfig[strCurDomain] = objConfigHandler.get(strCurDomain);
     if (objConfig[strCurDomain] && change.status === "complete") {
         callFullProcess();
     }

@@ -107,9 +107,15 @@ window.onload = function () {
     $('#btn_save').on('click', function () {
         $('#config').addClass('slideup').removeClass('slidedown');
 
+        // reads stored or returns a new one
+        objConfig = objBackground.initConfig(strCurDomain);
+
         // update config with new values
         objConfig.target = $('#target').val();
         objConfig.container = $('#container').val();
+
+        // and save it
+        objBackground.saveConfig(strCurDomain, objConfig);
 
         // launch reprocessing
         objBackground.callFullProcess();

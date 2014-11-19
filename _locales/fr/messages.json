@@ -30,7 +30,7 @@
     },
 
     "config_title": {
-        "message": "Puedes indicar un tag, una clase o una combinació de ambas para indicar tanto los Targets como los Containers.",
+        "message": "Puedes indicar un tag, una clase o una combinación de ambas para indicar tanto los Targets como los Containers.",
         "description": ""
     },
 
