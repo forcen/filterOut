@@ -111,6 +111,7 @@ function callFilterOut () {
 function callToggleContent (strContent) {
     if(objConfig[strCurDomain]) {
         objConfig[strCurDomain].filtered.toggle(strContent);
+        objConfigHandler.set(strCurDomain, objConfig[strCurDomain]);
         callFilterOut ();
     }
 }
