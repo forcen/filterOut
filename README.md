@@ -1,4 +1,5 @@
-==FilterOut==
+###FilterOut###
+
 How many times had you heard about the newspapers of the future? That one tailored to your needs. Sure, there’s mashup of newspapers. But… how many newspapers let you select what articles or what authors do you want to read? They want you to see everything and, even better, enter into every article.
 
 And what about employment sites? Or classified ads portals? You cannot filter out the content you’re not interested in. For example, the materials that certain seller is offering. Or the job offers that a hideous company is publishing just to harvest CVs. Had you noticed that there’s no options for filtering out this kind of content? Their business model is to push everything toward your eyeballs. Never to help you to find what you’re really looking for. 
