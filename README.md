@@ -1,4 +1,4 @@
-###FilterOut###
+# FilterOut
 
 How many times had you heard about the newspapers of the future? That one tailored to your needs. Sure, there’s mashup of newspapers. But… how many newspapers let you select what articles or what authors do you want to read? They want you to see everything and, even better, enter into every article.
 
@@ -6,4 +6,5 @@ And what about employment sites? Or classified ads portals? You cannot filter ou
 
 The logic behind FilterOut is simple: scan the page for Targets, let the user select by Target's content which content they're not interested in and delete the Containers where those contents are located. There's some element inspection with the Chrome Developer Tool required and some testing until you find the Targets for the site whose content you want to filter out.
 
+## How to
 Install this as an unpacked Chrome extension and experiment. It's still a work in progress. Feel free to suggest changes, improvements...
