@@ -30,7 +30,7 @@
     },
 
     "config_title": {
-        "message": "Puedes indicar un tag, una clase o una combinación de ambas para indicar tanto los Targets como los Containers.",
+        "message": "Vous pouvez indiquer un tag, une classe ou une combinaison des deux pour indiquer aussi bien les Targets que les Containers.",
         "description": ""
     },
 
@@ -39,7 +39,7 @@
         "description": ""
     },
     "config_target_hint": {
-        "message": "Este selector ayuda a FilterOut a identificar lo que quieres buscar en la página.",
+        "message": "Ce sélecteur aide FilterOut à identifier ce que vous souhaitez chercher dans la page.",
         "description": ""
     },
 
@@ -48,27 +48,27 @@
         "description": ""
     },
     "config_container_hint": {
-        "message": "Este selector identifica el bloque que delimita el contenido a ocultar.",
+        "message": "Ce sélecteur identifie le bloc qui délimite le contenu à cacher.",
         "description": ""
     },
 
     "about_text": {
-        "message": "Filtra los contenidos que no deseas ver en las páginas que visitas.",
+        "message": "Filtre les contenus que vous ne souhaitez pas voir dans les pages que vous visitez.",
         "description": ""
     },
 
     "no_config": {
-        "message": "No hay configuración para esta página.",
+        "message": "Il ny a aucune configuration pour cette page.",
         "description": ""
     },
 
     "reload": {
-        "message": "Recarga la página para ver los cambios.",
+        "message": "Actualisez la page afin de voir les changements.",
         "description": ""
     },
 
     "loading": {
-        "message": "Loading content...",
+        "message": "Chargement de contenu...",
         "description": ""
     }
 }
