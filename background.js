@@ -173,12 +173,7 @@ objExtension = {
                                 config: this.objConfig[this.strCurDomain]
                             },
                             function(response) {
-                                var numTargets;
-
                                 if(response) {
-                                    numTargets = response.results ?
-                                                    response.results.length :
-                                                    0;
                                     self.arrResults[self.strCurDomain] = response.results ?
                                                                 response.results.sort(function (a, b) { return a.localeCompare(b); }) :
                                                                 [];
