@@ -14,8 +14,9 @@ A couple of sample configs:
 'eldiario.es': {
                 target: '.md-day-pinture-item .byline, .byline a',
                 container: '.md-news-main, .md-day-pinture-item, .lst-item'
-            },
+            }
+
 'elconfidencial.com': {
                 target: 'span .signature',
                 container: '.article'
-            },
+            }
