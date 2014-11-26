@@ -37,7 +37,6 @@ window.onload = function () {
 
     $(".site_name").setText(strCurDomain);
     loadI18nMessages();
-    objResults.empty();
     
     if(!objConfig) {
         if(objExtension.getCurDomain()) {
