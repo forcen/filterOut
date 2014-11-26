@@ -8,3 +8,15 @@ The logic behind FilterOut is simple: scan the page for Targets, let the user se
 
 ## How to
 Install this as an unpacked Chrome extension and experiment. It's still a work in progress. Feel free to suggest changes, improvements...
+
+A couple of sample configs:
+
+'eldiario.es': {
+                target: '.md-day-pinture-item .byline, .byline a',
+                container: '.md-news-main, .md-day-pinture-item, .lst-item'
+            }
+
+'elconfidencial.com': {
+                target: 'span .signature',
+                container: '.article'
+            }
