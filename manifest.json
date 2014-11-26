@@ -5,17 +5,19 @@
     "description": "Filters out unwanted content.",
     "icons": { "128": "frontend/icon.png" },
     "default_locale": "en",
+    "permissions": ["storage", "tabs"],
+    "content_security_policy": "default-src 'none'; style-src 'self'; script-src 'self'",
+
     "background": { "scripts": ["lib/dom.js", "lib/arrays.js", "background.js"] },
+
     "content_scripts": [{
                             "matches": ["<all_urls>"], 
                             "css": ["filterout.css"],
                             "js": ["lib/dom.js", "lib/arrays.js", "content_script.js"]
                         }],
-    "permissions": ["storage", "tabs"],
     "browser_action": {
         "default_icon": {"128": "frontend/icon.png"},
         "default_title": "__MSG_extName__",
         "default_popup": "frontend/popup.html"
-    },
-    "content_security_policy": "default-src 'none'; style-src 'self'; script-src 'self'"
+    }
 }

@@ -28,11 +28,11 @@ function loadI18nMessages() {
 }
 
 window.onload = function () {
-    var objBackground = chrome.extension.getBackgroundPage(),
-        strCurDomain = objBackground.strCurDomain || chrome.i18n.getMessage('loading'),
-        arrResults = objBackground.arrResults[strCurDomain] || [],
+    var objExtension = chrome.extension.getBackgroundPage().objExtension,
+        strCurDomain = objExtension.getCurDomain() || chrome.i18n.getMessage('loading'),
+        arrResults = objExtension.getResults(),
         objResults = $('#results ul'),
-        objConfig = objBackground.objConfig[strCurDomain],
+        objConfig = objExtension.getCurConfig(),
         eleListContent = document.createDocumentFragment();
 
     $(".site_name").setText(strCurDomain);
@@ -40,7 +40,7 @@ window.onload = function () {
     objResults.empty();
     
     if(!objConfig) {
-        if(objBackground.strCurDomain) {
+        if(objExtension.getCurDomain()) {
             $('.no_config').show();
         }
     } else {
@@ -80,7 +80,7 @@ window.onload = function () {
             $(element).addClass('target-selected');
         }
 
-        objBackground.callToggleContent(e.target.textContent);
+        objExtension.callToggleContent(e.target.textContent);
     });
 
 	// open config panel
@@ -114,12 +114,11 @@ window.onload = function () {
         $('#config').addClass('slideup').removeClass('slidedown');
         $('.no_config').hide();
 
-        objBackground.callSaveConfig(strCurDomain,
-                                        $('#target').val(),
-                                        $('#container').val());
+        objExtension.callSaveConfig($('#target').val(),
+                                    $('#container').val());
     });
 
     $('#reload').on('click', function () {
-        objBackground.callReload();
+        objExtension.callReload();
     });
 };
