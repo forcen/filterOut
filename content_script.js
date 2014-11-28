@@ -1,4 +1,4 @@
-/* globals window, top, chrome, $ */
+/* globals window, document, top, chrome, $, MutationObserver */
 
 /**
  * this is the script that has access to the content of the page.
@@ -27,7 +27,8 @@ if (window === top) {
      *
      * @param {Object} objConfig Configuration for current domain
      */
-var processPage = function(objConfig) {
+var objLastConfig = null,
+    processPage = function(objConfig) {
         var objResult = {   // an object for historical reasons.
                             results: []
                         };
@@ -41,6 +42,11 @@ var processPage = function(objConfig) {
                 $(element).addClass('filterout-debug');
             }
         });
+
+        // mutation observer
+        setObserver();
+        objLastConfig = objConfig;
+
         return objResult;
     },
 
@@ -51,12 +57,12 @@ var processPage = function(objConfig) {
      * 
      * @param  {Object} objConfig Configuration for current domain
      */
-    filterOut = function(objConfig) {
+    filterOut = function(objConfig, element) {
         var arrFiltered = objConfig.filtered,
             arrTargets = objConfig.target.split(',');
 
         if(arrFiltered.length && objConfig.container) {
-            $(objConfig.container).forEach(function(element){
+            $(objConfig.container, element).forEach(function(element){
                 arrTargets.forEach(function (strTarget) {
                     var elemTarget = $(strTarget, element);
 
@@ -66,4 +72,22 @@ var processPage = function(objConfig) {
                 });
             });
         }
+    },
+
+    filterElement = function (element) {
+        if(objLastConfig) {
+            filterOut(objLastConfig, element);
+        }
+    },
+
+    setObserver= function () {
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function (mutation) {
+                if(mutation.addedNodes.length) {
+                    filterElement(mutation.addedNodes[0]);
+                }
+            });              
+        });
+
+        observer.observe(document.body, { subtree: true, childList: true });
     };
