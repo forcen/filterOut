@@ -94,12 +94,13 @@ objExtension = {
      * @param  {String} strTarget
      * @param  {String} strContainer
      */
-    callSaveConfig: function (strTarget, strContainer) {
+    callSaveConfig: function (strTarget, strContainer, boolDebug) {
         var strDomain = this.getCurDomain(),
             objLocalConfig = this.initConfig(strDomain);
 
         objLocalConfig.target = strTarget;
         objLocalConfig.container = strContainer;
+        objLocalConfig.debug = boolDebug;
 
         this.objConfigHandler.set(strDomain, objLocalConfig);
         this.callFullProcess();   

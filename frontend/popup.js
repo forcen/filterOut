@@ -19,6 +19,7 @@ function loadI18nMessages() {
     setProperty('.config_target p', 'innerText', 'config_target_hint');
     setProperty('.config_container label', 'innerText', 'config_container_label');
     setProperty('.config_container p', 'innerText', 'config_container_hint');
+    setProperty('.config_debug label', 'innerText', 'config_debug_label');
 
     setProperty('#btn_cancel', 'innerText', 'btnCancel');
     setProperty('#btn_save', 'innerText', 'btnSave');
@@ -63,6 +64,7 @@ window.onload = function () {
         // fill config panel
         $('#target').val(objConfig.target);
         $('#container').val(objConfig.container);
+        $('#debug').val(objConfig.debug);
     }
 
     /**
@@ -103,7 +105,7 @@ window.onload = function () {
 		$('#config').addClass('slideup').removeClass('slidedown');
 	});
 
-    // close config panel
+    // close about panel
     $('#btn_close').on('click', function () {
         $('#about').addClass('slideup').removeClass('slidedown');
     });
@@ -114,7 +116,8 @@ window.onload = function () {
         $('.no_config').hide();
 
         objExtension.callSaveConfig($('#target').val(),
-                                    $('#container').val());
+                                    $('#container').val(),
+                                    $('#debug').val());
     });
 
     $('#reload').on('click', function () {

@@ -52,6 +52,11 @@
         "description": ""
     },
 
+    "config_debug_label": {
+        "message": "Modo depuración",
+        "description": ""
+    },
+
     "about_text": {
         "message": "Filtra los contenidos que no deseas ver en las páginas que visitas.",
         "description": ""

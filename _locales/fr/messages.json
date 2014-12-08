@@ -52,6 +52,11 @@
         "description": ""
     },
 
+    "config_debug_label": {
+        "message": "Debug mode",
+        "description": ""
+    },
+
     "about_text": {
         "message": "Filtre les contenus que vous ne souhaitez pas voir dans les pages que vous visitez.",
         "description": ""

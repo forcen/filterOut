@@ -52,6 +52,11 @@
         "description": ""
     },
 
+    "config_debug_label": {
+        "message": "Debug mode",
+        "description": ""
+    },
+
     "about_text": {
         "message": "Filter the contents you don't want to see from web pages.",
         "description": ""
