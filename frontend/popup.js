@@ -2,131 +2,124 @@
  * the popup is created new each time it opens. 
  * the only persistence is in the background code.
  */
-
 function loadI18nMessages() {
-    function setProperty(selector, prop, msg) {
-        document.querySelector(selector)[prop] = chrome.i18n.getMessage(msg);
+    const setLabel = (selector, msg) => {
+        const element = document.querySelector(selector);
+
+        element && (element.innerText = chrome.i18n.getMessage(msg));
     }
 
-    setProperty('title', 'innerText', 'popupTitle');
-    setProperty('#btn_about', 'innerText', 'btnAbout');
-    setProperty('#btn_config', 'innerText', 'btnConfig');
-    setProperty('#no_config', 'innerText', 'no_config');
-    setProperty('#reload', 'innerText', 'reload');
+    setLabel('title', 'popupTitle');
+    setLabel('#btn_about', 'btnAbout');
+    setLabel('#btn_config', 'btnConfig');
+    setLabel('#no_config', 'no_config');
+    setLabel('#reload', 'reload');
 
-    setProperty('.config_title', 'innerText', 'config_title');
-    setProperty('.config_target label', 'innerText', 'config_target_label');
-    setProperty('.config_target p', 'innerText', 'config_target_hint');
-    setProperty('.config_container label', 'innerText', 'config_container_label');
-    setProperty('.config_container p', 'innerText', 'config_container_hint');
-    setProperty('.config_debug label', 'innerText', 'config_debug_label');
+    setLabel('.config_title', 'config_title');
+    setLabel('.config_target label', 'config_target_label');
+    setLabel('.config_target p', 'config_target_hint');
+    setLabel('.config_container label', 'config_container_label');
+    setLabel('.config_container p', 'config_container_hint');
+    setLabel('.config_debug label', 'config_debug_label');
 
-    setProperty('#btn_cancel', 'innerText', 'btnCancel');
-    setProperty('#btn_save', 'innerText', 'btnSave');
+    setLabel('#btn_cancel', 'btnCancel');
+    setLabel('#btn_save', 'btnSave');
 
-    setProperty('#about p', 'innerText', 'about_text');
-    setProperty('#btn_close', 'innerText', 'btnClose');
+    setLabel('#about p', 'about_text');
+    setLabel('#btn_close', 'btnClose');
 }
 
 window.onload = function () {
-    chrome.runtime.getBackgroundPage(function (backgroundPage) {
-        filterOut = backgroundPage.getExtension();
+    chrome.runtime.getBackgroundPage(backgroundPage => {
+        const filterOut = backgroundPage.getExtension();
+        const currentDomain = filterOut.getCurrentDomain() || chrome.i18n.getMessage('loading');
+        const itemsToFilter = filterOut.getResults();
+        const configuration = filterOut.getCurrentConfiguration();
+        const elementsListContent = document.createDocumentFragment();
 
-console.warn(filterOut)
-
-    const currentDomain = filterOut.getCurrentDomain() || chrome.i18n.getMessage('loading');
-    const itemsToFilter = filterOut.getResults();
-    const objResults = $('#results ul');
-    const configuration = filterOut.getCurrentConfiguration();
-    const elementsListContent = document.createDocumentFragment();
-
-    $(".site_name").setText(currentDomain);
-    loadI18nMessages();
-    
-    if(!configuration) {
-        if(filterOut.getCurrentDomain()) {
-            $('.no_config').show();
-        }
-    } else {
-        $('.no_config').hide();
-
-        // fill results list
-        if(itemsToFilter.length) {
-            itemsToFilter.forEach(function(strTargetContent) {
-                var elementContent = document.createTextNode(strTargetContent),
-                    element = document.createElement('li');
-
-                element.appendChild(elementContent);
-                if(configuration.filtered.contains(strTargetContent)) {
-                    $(element).addClass('target-selected');
-                }
-                elementsListContent.appendChild(element);
-            });
-            objResults.first().appendChild(elementsListContent);
-        }
-
-        // fill config panel
-        $('#target').val(configuration.target);
-        $('#container').val(configuration.container);
-        $('#debug').val(configuration.debug);
-    }
-
-    /**
-     * event handlers
-     */
-    // list click handler
-    $('#results ul').on('click', function (e) {
-        var element = e.target;
-
-        if($(element).hasClass('target-selected')) {
-            $(element).removeClass('target-selected');
-            $('#reload').show();
+        $(".site_name").setText(currentDomain);
+        loadI18nMessages();
+        
+        if(!configuration) {
+            if(filterOut.getCurrentDomain()) {
+                $('.no_config').show();
+            }
         } else {
-            $(element).addClass('target-selected');
+            if(itemsToFilter.length) {
+                itemsToFilter.forEach(strTargetContent => {
+                    const elementContent = document.createTextNode(strTargetContent);
+                    const element = document.createElement('li');
+
+                    element.appendChild(elementContent);
+                    if(configuration.filtered.includes(strTargetContent)) {
+                        $(element).addClass('target-selected');
+                    }
+                    elementsListContent.appendChild(element);
+                });
+                $('#results ul').first().appendChild(elementsListContent);
+            }
+
+            // fill config panel
+            $('#target').value(configuration.target);
+            $('#container').value(configuration.container);
+            $('#debug').value(configuration.debug);
         }
 
-        filterOut.callToggleContent(e.target.textContent);
-    });
+        /**
+         * event handlers
+         */
+        // list click handler
+        $('#results ul').on('click', e => {
+            const element = e.target;
 
-	// open config panel
-	$('#btn_config').on('click', function () {
-        if($('#about').hasClass('slidedown')) {
+            if($(element).hasClass('target-selected')) {
+                $(element).removeClass('target-selected');
+                $('#reload').show();
+            } else {
+                $(element).addClass('target-selected');
+            }
+
+            filterOut.callToggleContent(e.target.textContent);
+        });
+
+    	// open config panel
+    	$('#btn_config').on('click', () => {
+            if($('#about').hasClass('slidedown')) {
+                $('#about').addClass('slideup').removeClass('slidedown');
+    		}
+            $('#config').addClass('slidedown').removeClass('slideup');
+    	});
+
+        // open about panel
+        $('#btn_about').on('click', () => {
+            if($('#config').hasClass('slidedown')) {
+                $('#config').addClass('slideup').removeClass('slidedown');
+            }
+            $('#about').addClass('slidedown').removeClass('slideup');
+        });
+
+        // close config panel
+    	$('#btn_cancel').on('click', () => {
+    		$('#config').addClass('slideup').removeClass('slidedown');
+    	});
+
+        // close about panel
+        $('#btn_close').on('click', () => {
             $('#about').addClass('slideup').removeClass('slidedown');
-		}
-        $('#config').addClass('slidedown').removeClass('slideup');
-	});
+        });
 
-    // open about panel
-    $('#btn_about').on('click', function () {
-        if($('#config').hasClass('slidedown')) {
+        // modify settings and reprocess
+        $('#btn_save').on('click', () => {
             $('#config').addClass('slideup').removeClass('slidedown');
-        }
-        $('#about').addClass('slidedown').removeClass('slideup');
+            $('.no_config').hide();
+
+            filterOut.callSaveConfig($('#target').value(),
+                                        $('#container').value(),
+                                        $('#debug').value());
+        });
+
+        $('#reload').on('click', () => {
+            filterOut.callReload();
+        });
     });
-
-    // close config panel
-	$('#btn_cancel').on('click', function () {
-		$('#config').addClass('slideup').removeClass('slidedown');
-	});
-
-    // close about panel
-    $('#btn_close').on('click', function () {
-        $('#about').addClass('slideup').removeClass('slidedown');
-    });
-
-    // modify settings and reprocess
-    $('#btn_save').on('click', function () {
-        $('#config').addClass('slideup').removeClass('slidedown');
-        $('.no_config').hide();
-
-        filterOut.callSaveConfig($('#target').val(),
-                                    $('#container').val(),
-                                    $('#debug').val());
-    });
-
-    $('#reload').on('click', function () {
-        filterOut.callReload();
-    });
-   });
-
 };
