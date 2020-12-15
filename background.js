@@ -2,21 +2,20 @@
 
 'use strict';
 
-var 
-objExtension = {
+const filterOut = {
 
-    strCurDomain: null,
-    arrResults: {},
-    objConfig: {},
+    currentDomain: null,
+    itemsToFilter: {},
+    configuration: {},
 
     // local storage handling object
-    objConfigHandler: {
-        get: function (strDomain) {
-            return JSON.parse(localStorage.getItem(strDomain));
+    configurationHandler: {
+        get: function (domain) {
+            return JSON.parse(localStorage.getItem(domain));
         },
 
-        set: function (strDomain, objConfig) {
-            localStorage.setItem(strDomain, JSON.stringify(objConfig));
+        set: function (domain, configuration) {
+            localStorage.setItem(domain, JSON.stringify(configuration));
         }
     },
 
@@ -29,10 +28,23 @@ objExtension = {
      * @param  {String}     a an url
      * @return {String}     just the domain part of the url
      */
-    getDomainName: function (a) {
-        a = a.split("/")[2].split(":")[0].split(".");
-        2 < a.length && a.shift();  // jshint ignore: line
-        this.strCurDomain = a.join(".");
+    getDomainName: function (url) {
+        var hostname;
+        //find & remove protocol (http, ftp, etc.) and get hostname
+
+        if (url.indexOf("//") > -1) {
+            hostname = url.split('/')[2];
+        }
+        else {
+            hostname = url.split('/')[0];
+        }
+
+        //find & remove port number
+        hostname = hostname.split(':')[0];
+        //find & remove "?"
+        hostname = hostname.split('?')[0];
+
+        return hostname;
     },
 
     /**
@@ -43,44 +55,44 @@ objExtension = {
         chrome
             .browserAction
             .setBadgeText({
-                            text: this.arrResults[this.strCurDomain] ?
-                                    this.arrResults[this.strCurDomain].length.toString() :
+                            text: this.itemsToFilter[this.currentDomain] ?
+                                    this.itemsToFilter[this.currentDomain].length.toString() :
                                     '0',
                             tabId: tabId
                         });
     },
 
     /**
-     * returns strDomain or inits a new one
-     * @param  {String} strDomain the domain
+     * returns domain or inits a new one
+     * @param  {String} domain the domain
      * @return {object}           a properly configured config object
      */
-    initConfig: function (strDomain) {
-        return this.objConfigHandler
-                    .get(strDomain) || {
-                                            target: '',
-                                            container: '',
-                                            filtered: [],
-                                            debug: true
-                                        };
+    initConfig: function (domain) {
+        return this.configurationHandler
+                    .get(domain) || {
+                                        target: '',
+                                        container: '',
+                                        filtered: [],
+                                        debug: true
+                                    };
     },
 
-    getCurConfig: function () {
-        this.objConfig[this.strCurDomain] = this.objConfigHandler.get(this.strCurDomain);
+    getCurrentConfiguration: function () {
+        this.configuration[this.currentDomain] = this.configurationHandler.get(this.currentDomain);
 
-        return this.objConfig[this.strCurDomain];
+        return this.configuration[this.currentDomain];
     },
 
     hasConfig: function () {
-        return this.objConfig[this.strCurDomain] ? true : false;
+        return this.configuration[this.currentDomain] ? true : false;
     },
 
-    getCurDomain: function () {
-        return this.strCurDomain;
+    getCurrentDomain: function () {
+        return this.currentDomain;
     },
 
     getResults: function () {
-        return this.arrResults[this.strCurDomain] || [];
+        return this.itemsToFilter[this.currentDomain] || [];
     },
 
     /**
@@ -90,19 +102,19 @@ objExtension = {
 
     /**
      * save configuration when modified in popup
-     * @param  {String} strDomain
-     * @param  {String} strTarget
-     * @param  {String} strContainer
+     * @param  {String} domain
+     * @param  {String} target
+     * @param  {String} container
      */
-    callSaveConfig: function (strTarget, strContainer, boolDebug) {
-        var strDomain = this.getCurDomain(),
-            objLocalConfig = this.initConfig(strDomain);
+    callSaveConfig: function (target, container, debug) {
+        const domain = this.getCurrentDomain();
+        const localConfiguration = this.initConfig(domain);
 
-        objLocalConfig.target = strTarget;
-        objLocalConfig.container = strContainer;
-        objLocalConfig.debug = boolDebug;
+        localConfiguration.target = target;
+        localConfiguration.container = container;
+        localConfiguration.debug = debug;
 
-        this.objConfigHandler.set(strDomain, objLocalConfig);
+        this.configurationHandler.set(domain, localConfiguration);
         this.callFullProcess();   
     },
 
@@ -122,7 +134,7 @@ objExtension = {
         
         chrome.tabs.query({currentWindow: true, active: true},
                             function(tabs) {
-                                self.doProcessPage(tabs[0].id, self.strCurDomain);
+                                self.doProcessPage(tabs[0].id, self.currentDomain);
                             });
     },
 
@@ -134,7 +146,7 @@ objExtension = {
 
         chrome.tabs.query({currentWindow: true, active: true},
                             function(tabs) {
-                                self.doFilterOut(tabs[0].id, self.strCurDomain);
+                                self.doFilterOut(tabs[0].id, self.currentDomain);
                             });
     },
 
@@ -144,9 +156,9 @@ objExtension = {
      * @param  {String} strContent The content to add/remove to filtered Array
      */
     callToggleContent: function (strContent) {
-        if(this.objConfig[this.strCurDomain]) {
-            this.objConfig[this.strCurDomain].filtered.toggle(strContent);
-            this.objConfigHandler.set(this.strCurDomain, this.objConfig[this.strCurDomain]);
+        if(this.configuration[this.currentDomain]) {
+            this.configuration[this.currentDomain].filtered.toggle(strContent);
+            this.configurationHandler.set(this.currentDomain, this.configuration[this.currentDomain]);
             this.callFilterOut ();
         }
     },
@@ -165,17 +177,17 @@ objExtension = {
     doProcessPage: function (tabId) {
         var self = this;
 
-        if(this.objConfig[this.strCurDomain]) {
+        if(this.configuration[this.currentDomain]) {
             chrome
-                .tabs
+                .runtime
                 .sendMessage(tabId,
                             {
                                 op: 'init',
-                                config: this.objConfig[this.strCurDomain]
+                                config: this.configuration[this.currentDomain]
                             },
                             function(response) {
                                 if(response) {
-                                    self.arrResults[self.strCurDomain] = response.results ?
+                                    self.itemsToFilter[self.currentDomain] = response.results ?
                                                                 response.results.sort(function (a, b) { return a.localeCompare(b); }) :
                                                                 [];
                                     self.setBadge(tabId);
@@ -190,17 +202,18 @@ objExtension = {
      * @param  tabId
      */
     doFilterOut: function (tabId) {
-        if(this.objConfig[this.strCurDomain]) {
+        if(this.configuration[this.currentDomain]) {
             chrome
-                .tabs
+                .runtime
                 .sendMessage(tabId,
                             {
                                 op: 'filter',
-                                config: this.objConfig[this.strCurDomain]
+                                config: this.configuration[this.currentDomain]
                             });
         }
     }
 };
+
 
 /**
  * the set of listeners that we need to be able to automatically 
@@ -209,16 +222,16 @@ objExtension = {
 chrome.windows.onFocusChanged.addListener(function (windowId) {
     if(windowId > -1) {
         chrome.tabs.getSelected(windowId, function (tab) {
-            objExtension.getDomainName(tab.url);
-            objExtension.setBadge(tab.id);
+            filterOut.currentDomain = filterOut.getDomainName(tab.url);
+            filterOut.setBadge(tab.id);
         });
     }
 });
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
-    chrome.tabs.get(activeInfo.tabId, function (tab) {
-        objExtension.getDomainName(tab.url);
-        objExtension.setBadge(tab.id);
+    chrome.tab.get(activeInfo.tabId, function (tab) {
+        filterOut.currentDomain = filterOut.getDomainName(tab.url);
+        filterOut.setBadge(tab.id);
     });
 });
 
@@ -227,10 +240,14 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
  * executes the filtering if there's any data stored for the url
  */
 chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
-    objExtension.getDomainName(tab.url);
-    objExtension.setBadge();
-    objExtension.getCurConfig();
-    if (objExtension.hasConfig() && change.status === "complete") {
-        objExtension.callFullProcess();
+    filterOut.currentDomain = filterOut.getDomainName(tab.url);
+    filterOut.setBadge();
+    filterOut.getCurrentConfiguration();
+    if (filterOut.hasConfig() && change.status === "complete") {
+        filterOut.callFullProcess();
     }
 });
+
+function getExtension() {
+    return filterOut;
+}

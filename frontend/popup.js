@@ -29,42 +29,46 @@ function loadI18nMessages() {
 }
 
 window.onload = function () {
-    var objExtension = chrome.extension.getBackgroundPage().objExtension,
-        strCurDomain = objExtension.getCurDomain() || chrome.i18n.getMessage('loading'),
-        arrResults = objExtension.getResults(),
-        objResults = $('#results ul'),
-        objConfig = objExtension.getCurConfig(),
-        eleListContent = document.createDocumentFragment();
+    chrome.runtime.getBackgroundPage(function (backgroundPage) {
+        filterOut = backgroundPage.getExtension();
 
-    $(".site_name").setText(strCurDomain);
+console.warn(filterOut)
+
+    const currentDomain = filterOut.getCurrentDomain() || chrome.i18n.getMessage('loading');
+    const itemsToFilter = filterOut.getResults();
+    const objResults = $('#results ul');
+    const configuration = filterOut.getCurrentConfiguration();
+    const elementsListContent = document.createDocumentFragment();
+
+    $(".site_name").setText(currentDomain);
     loadI18nMessages();
     
-    if(!objConfig) {
-        if(objExtension.getCurDomain()) {
+    if(!configuration) {
+        if(filterOut.getCurrentDomain()) {
             $('.no_config').show();
         }
     } else {
         $('.no_config').hide();
 
         // fill results list
-        if(arrResults.length) {
-            arrResults.forEach(function(strTargetContent) {
+        if(itemsToFilter.length) {
+            itemsToFilter.forEach(function(strTargetContent) {
                 var elementContent = document.createTextNode(strTargetContent),
                     element = document.createElement('li');
 
                 element.appendChild(elementContent);
-                if(objConfig.filtered.contains(strTargetContent)) {
+                if(configuration.filtered.contains(strTargetContent)) {
                     $(element).addClass('target-selected');
                 }
-                eleListContent.appendChild(element);
+                elementsListContent.appendChild(element);
             });
-            objResults.first().appendChild(eleListContent);
+            objResults.first().appendChild(elementsListContent);
         }
 
         // fill config panel
-        $('#target').val(objConfig.target);
-        $('#container').val(objConfig.container);
-        $('#debug').val(objConfig.debug);
+        $('#target').val(configuration.target);
+        $('#container').val(configuration.container);
+        $('#debug').val(configuration.debug);
     }
 
     /**
@@ -81,7 +85,7 @@ window.onload = function () {
             $(element).addClass('target-selected');
         }
 
-        objExtension.callToggleContent(e.target.textContent);
+        filterOut.callToggleContent(e.target.textContent);
     });
 
 	// open config panel
@@ -115,12 +119,14 @@ window.onload = function () {
         $('#config').addClass('slideup').removeClass('slidedown');
         $('.no_config').hide();
 
-        objExtension.callSaveConfig($('#target').val(),
+        filterOut.callSaveConfig($('#target').val(),
                                     $('#container').val(),
                                     $('#debug').val());
     });
 
     $('#reload').on('click', function () {
-        objExtension.callReload();
+        filterOut.callReload();
     });
+   });
+
 };

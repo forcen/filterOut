@@ -8,7 +8,10 @@
     "permissions": ["storage", "tabs"],
     "content_security_policy": "default-src 'none'; style-src 'self'; script-src 'self'",
 
-    "background": { "scripts": ["lib/dom.js", "lib/arrays.js", "background.js"] },
+    "background": {
+        "scripts": ["lib/dom.js", "lib/arrays.js", "background.js"],
+        "persistent": false
+    },
 
     "content_scripts": [{
                             "matches": ["<all_urls>"], 
