@@ -1,5 +1,3 @@
-/* globals window, document, top, chrome, $, MutationObserver */
-
 /**
  * This is the script that has access to the content of the page.
  * It's invoked from the background.js 
@@ -10,23 +8,20 @@
  * to look for articles or content based upon the target
  * passed in config.
  *
- * @param {Object} currentConfiguration Configuration for current domain
+ * @param {Object} configuration Configuration for current domain
  */
-let currentConfiguration = null;
-
-const processPage = (configuration) => {
+const processPage = configuration => {
     const results = [];
 
     configuration.debug && $('.filterout-debug').removeClass('filterout-debug');
 
-    $(configuration.target).forEach((element) => {
+    $(configuration.target).forEach(element => {
         results.pushUnique($(element).getText().trim());
         configuration.debug && $(element).addClass('filterout-debug');
     });
 
     // mutation observer
-    setObserver();
-    currentConfiguration = configuration;
+    setObserver(configuration);
 
     return results;
 };
@@ -36,18 +31,19 @@ const processPage = (configuration) => {
  * Instead looks for all possible containers and find targets
  * with a value that matches the filtered ones.
  * 
- * @param  {Object} configuration Configuration for current domain
+ * @param  {Object} configuration   Configuration for current domain.
+ * @param  {Object} element         optional to start the filter from.
  */
 const filterOut = (configuration, element) => {
     const filteredElements = configuration.filtered;
     const targets = configuration.target.split(',');
 
-    if(filteredElements.length && configuration.container) {
-        $(configuration.container, element).forEach((element) => {
-            targets.forEach((target) => {
+    if (filteredElements.length && configuration.container) {
+        $(configuration.container, element).forEach(element => {
+            targets.forEach(target => {
                 const targetElement = $(target, element);
 
-                if(targetElement.length && filteredElements.includes($(targetElement.first()).getText().trim())) {
+                if (targetElement.length && filteredElements.includes($(targetElement.first()).getText().trim())) {
                     element.remove();
                 }
             });
@@ -55,36 +51,39 @@ const filterOut = (configuration, element) => {
     }
 };
 
-const setObserver = () => {
-    const filterElement = (element) => {
-        if(currentConfiguration) {
-            filterOut(currentConfiguration, element);
+/**
+ * Setup a Mutation Observer to filter newly added elements.
+ */
+const setObserver = configuration => {
+    const filterElement = element => {
+        if (configuration) {
+            filterOut(configuration, element);
         }
     };
 
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if(mutation.addedNodes.length) {
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.addedNodes.length) {
                 filterElement(mutation.addedNodes[0]);
             }
-        });              
+        });
     });
 
-    observer.observe(document.body, { subtree: true, childList: true });
+    observer.observe(document.body, { subtree: true, childList: true, });
 };
 
 /**
  * Setup message listener
  */
-if (window === top) { 
+if (window === top) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        switch(request.op) {
-            case 'init':
-                sendResponse(processPage(request.config));
-                break;
-            case 'filter':
-                sendResponse(filterOut(request.config));
-                break;
+        switch (request.op) {
+        case 'process':
+            sendResponse(processPage(request.config));
+            break;
+        case 'filter':
+            sendResponse(filterOut(request.config));
+            break;
         }
     });
 }

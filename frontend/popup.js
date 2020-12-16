@@ -7,7 +7,7 @@ function loadI18nMessages() {
         const element = document.querySelector(selector);
 
         element && (element.innerText = chrome.i18n.getMessage(msg));
-    }
+    };
 
     setLabel('title', 'popupTitle');
     setLabel('#btn_about', 'btnAbout');
@@ -29,29 +29,29 @@ function loadI18nMessages() {
     setLabel('#btn_close', 'btnClose');
 }
 
-window.onload = function () {
+window.onload = function() {
     chrome.runtime.getBackgroundPage(backgroundPage => {
         const filterOut = backgroundPage.getExtension();
         const currentDomain = filterOut.getCurrentDomain() || chrome.i18n.getMessage('loading');
         const itemsToFilter = filterOut.getResults();
-        const configuration = filterOut.getCurrentConfiguration();
+        const configuration = filterOut.getConfiguration();
         const elementsListContent = document.createDocumentFragment();
 
-        $(".site_name").setText(currentDomain);
+        $('.site_name').setText(currentDomain);
         loadI18nMessages();
-        
-        if(!configuration) {
-            if(filterOut.getCurrentDomain()) {
+
+        if (!configuration) {
+            if (filterOut.getCurrentDomain()) {
                 $('.no_config').show();
             }
         } else {
-            if(itemsToFilter.length) {
+            if (itemsToFilter.length) {
                 itemsToFilter.forEach(strTargetContent => {
                     const elementContent = document.createTextNode(strTargetContent);
                     const element = document.createElement('li');
 
                     element.appendChild(elementContent);
-                    if(configuration.filtered.includes(strTargetContent)) {
+                    if (configuration.filtered.includes(strTargetContent)) {
                         $(element).addClass('target-selected');
                     }
                     elementsListContent.appendChild(element);
@@ -65,6 +65,16 @@ window.onload = function () {
             $('#debug').value(configuration.debug);
         }
 
+        const openPane = pane => {
+            $(pane).addClass('slidedown').removeClass('slideup');
+        };
+
+        const closePane = pane => {
+            if ($(pane).hasClass('slidedown')) {
+                $(pane).addClass('slideup').removeClass('slidedown');
+            }
+        };
+
         /**
          * event handlers
          */
@@ -72,7 +82,7 @@ window.onload = function () {
         $('#results ul').on('click', e => {
             const element = e.target;
 
-            if($(element).hasClass('target-selected')) {
+            if ($(element).hasClass('target-selected')) {
                 $(element).removeClass('target-selected');
                 $('#reload').show();
             } else {
@@ -82,40 +92,36 @@ window.onload = function () {
             filterOut.callToggleContent(e.target.textContent);
         });
 
-    	// open config panel
-    	$('#btn_config').on('click', () => {
-            if($('#about').hasClass('slidedown')) {
-                $('#about').addClass('slideup').removeClass('slidedown');
-    		}
-            $('#config').addClass('slidedown').removeClass('slideup');
-    	});
+        // open config panel
+        $('#btn_config').on('click', () => {
+            closePane('#about');
+            openPane('#config');
+        });
 
         // open about panel
         $('#btn_about').on('click', () => {
-            if($('#config').hasClass('slidedown')) {
-                $('#config').addClass('slideup').removeClass('slidedown');
-            }
-            $('#about').addClass('slidedown').removeClass('slideup');
+            closePane('#config');
+            openPane('#about');
         });
 
         // close config panel
-    	$('#btn_cancel').on('click', () => {
-    		$('#config').addClass('slideup').removeClass('slidedown');
-    	});
+        $('#btn_cancel').on('click', () => {
+            closePane('#config');
+        });
 
         // close about panel
         $('#btn_close').on('click', () => {
-            $('#about').addClass('slideup').removeClass('slidedown');
+            closePane('#about');
         });
 
         // modify settings and reprocess
         $('#btn_save').on('click', () => {
-            $('#config').addClass('slideup').removeClass('slidedown');
+            closePane('#config');
             $('.no_config').hide();
 
             filterOut.callSaveConfig($('#target').value(),
-                                        $('#container').value(),
-                                        $('#debug').value());
+                $('#container').value(),
+                $('#debug').value());
         });
 
         $('#reload').on('click', () => {
