@@ -1,61 +1,56 @@
 <!doctype html>
 <html>
-	<head>
-    	<title></title>
-   		<link href="popup.css" rel="stylesheet" type="text/css">
-  	</head>
-	<body>
-	<header>
-		<img src="header.png" />
-	</header>
-	
-	<div id="config">
-		<h3 class="site_name"></h3>
-		<p class="config_title"></p>
-	
-		<div class="field config_target">
-			<label for="target"></label>
-			<p></p>
-			<input type="text" id="target" />
-		</div>
-	
-		<div class="field config_container">
-			<label for="container"></label>
-			<p></p>
-			<input type="text" id="container" />
-		</div>
 
-		<div class="field config_debug">
-			<input type="checkbox" id="debug" />
-			<label for="debug"></label>
-		</div>
+<head>
+    <title></title>
+    <link href="popup.css" rel="stylesheet" type="text/css">
+</head>
 
-		<div class="field controls">
-			<button id="btn_cancel"></button>
-			<button id="btn_save"></button>
-		</div>
-	</div>
-
-	<div id="about">
-		<p></p>
-		<div class="field controls">
-			<button id="btn_close"></button>
-		</div>
-	</div>
-
-	<div id="results">
-		<h3 class="site_name"></h3>
-		<p id="no_config"></p>
-		<a id="reload"></a>
-		<ul></ul>
-	</div>
-
+<body>
+    <header>
+        <img src="header.png" />
+    </header>
+    <div id="config">
+        <h3 class="site_name"></h3>
+        <p class="config_title"></p>
+        <div class="field config_target">
+            <label for="target"></label>
+            <p></p>
+            <input type="text" id="target" />
+        </div>
+        <div class="field config_container">
+            <label for="container"></label>
+            <p></p>
+            <input type="text" id="container" />
+        </div>
+        <div class="field config_debug">
+            <input type="checkbox" id="debug" />
+            <label for="debug"></label>
+        </div>
+        <div class="field controls">
+            <button id="btn_cancel"></button>
+            <button id="btn_save"></button>
+        </div>
+    </div>
+    <div id="about">
+        <p></p>
+        <div class="field controls">
+            <button id="btn_close"></button>
+        </div>
+    </div>
+    <div id="results">
+        <h3 class="site_name"></h3>
+        <p id="no_config"></p>
+        <a id="reload"></a>
+        <ul></ul>
+    </div>
     <footer class="controls">
-	    <button id="btn_about"></button>
-	    <button id="btn_config"></button>
+        <button id="btn_about"></button>
+        <button id="btn_config"></button>
     </footer>
     <script src="../lib/arrays.js"></script>
     <script src="../lib/dom.js"></script>
     <script src="popup.js"></script>
-  </body>
+</body>
+
 </html>

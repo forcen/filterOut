@@ -1,5 +1,3 @@
-/* global $, chrome, console, localStorage */
-
 function filterOut() {
     let currentDomain = null;
     const itemsToFilter = {};
@@ -27,8 +25,7 @@ function filterOut() {
 
         if (url.indexOf("//") > -1) {
             hostname = url.split('/')[2];
-        }
-        else {
+        } else {
             hostname = url.split('/')[0];
         }
 
@@ -43,15 +40,13 @@ function filterOut() {
      * @param {Number} tabId restrict the change to current tab
      */
     const setBadge = tabId => {
-        console.log('tab ', tabId)
         chrome
             .browserAction
             .setBadgeText({
-                            text: itemsToFilter[currentDomain] ?
-                                    itemsToFilter[currentDomain].length.toString() :
-                                    '0',
-                            tabId: tabId
-                        });
+                text: itemsToFilter[currentDomain] ?
+                    itemsToFilter[currentDomain].length.toString() : '0',
+                tabId: tabId
+            });
     };
 
     /**
@@ -59,15 +54,14 @@ function filterOut() {
      * @param  {String} domain the domain
      * @return {object}           a properly configured config object
      */
-    const initConfiguration = domain => {
+    const initConfiguration = domain =>
         configurationHandler
-                    .get(domain) || {
-                                        target: '',
-                                        container: '',
-                                        filtered: [],
-                                        debug: true
-                                    };
-    };
+        .get(domain) || {
+            target: '',
+            container: '',
+            filtered: [],
+            debug: true
+        };
 
     const getCurrentConfiguration = () => {
         configuration[currentDomain] = configurationHandler.get(currentDomain);
@@ -75,32 +69,35 @@ function filterOut() {
         return configuration[currentDomain];
     };
 
-    const hasConfig = () => (configuration[currentDomain] ? true : false);
+    const hasConfig = () => configuration[currentDomain] ? true : false;
 
     const getCurrentDomain = () => currentDomain;
 
-    const getResults = () => (itemsToFilter[currentDomain] || []);
-    
+    const getResults = () => itemsToFilter[currentDomain] || [];
+
     /**
      * this methods are called both from the inteface and as a reply
      * to chrome events
      */
 
     /**
-     * save configuration when modified in popup
+     * Save configuration when modified from popup.
+     * 
      * @param  {String} domain
      * @param  {String} target
      * @param  {String} container
      */
     const callSaveConfig = (target, container, debug) => {
         const domain = getCurrentDomain();
+
+        console.log(initConfiguration(domain));
         configurationHandler.set(domain, {
             ...initConfiguration(domain),
             target,
             container,
             debug,
         });
-        callFullProcess();   
+        callFullProcess();
     };
 
     /**
@@ -115,21 +112,20 @@ function filterOut() {
      * launchs the processing of the page to get targets' content to filter out
      */
     const callProcessPage = () => {
-        chrome.tabs.query({currentWindow: true, active: true},
-                            tabs => {
-                                alert(tabs[0].id)
-                                doProcessPage(tabs[0].id, currentDomain);
-                            });
+        chrome.tabs.query({ currentWindow: true, active: true },
+            tabs => {
+                doProcessPage(tabs[0].id);
+            });
     };
 
     /**
      * launchs the real filtering ot the content
      */
     const callFilterOut = () => {
-        chrome.tabs.query({currentWindow: true, active: true},
-                            tabs => {
-                                doFilterOut(tabs[0].id, currentDomain);
-                            });
+        chrome.tabs.query({ currentWindow: true, active: true },
+            tabs => {
+                doFilterOut(tabs[0].id);
+            });
     };
 
     /**
@@ -138,10 +134,10 @@ function filterOut() {
      * @param  {String} strContent The content to add/remove to filtered Array
      */
     const callToggleContent = strContent => {
-        if(configuration[currentDomain]) {
+        if (configuration[currentDomain]) {
             configuration[currentDomain].filtered.toggle(strContent);
             configurationHandler.set(currentDomain, configuration[currentDomain]);
-            callFilterOut ();
+            callFilterOut();
         }
     };
 
@@ -158,36 +154,36 @@ function filterOut() {
      */
     const doProcessPage = tabId => {
         const handleResponse = response => {
-            if(response) {
+            if (response) {
                 itemsToFilter[currentDomain] = response.results ?
-                                            response.results.sort((a, b) => a.localeCompare(b)) :
-                                            [];
+                    response.results.sort((a, b) => a.localeCompare(b)) : [];
                 setBadge(tabId);
             }
         };
 
-        if(configuration[currentDomain]) {
-            chrome.runtime.sendMessage({
-                op: 'init',
-                config: configuration[currentDomain]
-            },
-            handleResponse);
+        if (configuration[currentDomain]) {
+            chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                        op: 'init',
+                        config: configuration[currentDomain]
+                    },
+                    handleResponse);
+            });
         }
     };
 
     /**
      * calls the method that filters the page based on targets, containers 
      * and filtered content.
-     * @param  tabId
      */
     const doFilterOut = tabId => {
-        if(configuration[currentDomain]) {
+        if (configuration[currentDomain]) {
             chrome
                 .runtime
                 .sendMessage({
-                                op: 'filter',
-                                config: configuration[currentDomain]
-                            });
+                    op: 'filter',
+                    config: configuration[currentDomain]
+                });
         }
     };
 
@@ -203,9 +199,9 @@ function filterOut() {
 
     const onUpdated = (tabId, change, tab) => {
         currentDomain = getDomainName(tab.url);
-        setBadge();
+        setBadge(tabId);
         getCurrentConfiguration();
-        if (hasConfig() && change.status === "complete") {
+        if (hasConfig() && change.status === 'complete') {
             callFullProcess();
         }
     };
@@ -226,22 +222,22 @@ function filterOut() {
 const extension = filterOut();
 
 // Make the extension accesible to the frontend.
-// const getExtension = () => extension;
-
-function getExtension() { return extension; };
+function getExtension() {
+    return extension;
+}
 
 /**
  * the set of listeners that we need to be able to automatically 
  * process the pages when the user creates a window, reloads or activates a tab.
  */
 chrome.windows.onFocusChanged.addListener(windowId => {
-    if(windowId > -1) {
+    if (windowId > -1) {
         chrome.tabs.getSelected(windowId, extension.onFocusChanged);
     }
 });
 
 chrome.tabs.onActivated.addListener(activeInfo => {
-    chrome.tab.get(activeInfo.tabId, extension.onActivated);
+    chrome.tabs.get(activeInfo.tabId, extension.onActivated);
 });
 
 /**
