@@ -1,26 +1,29 @@
 function filterOut() {
     let currentDomain = null;
-    const itemsToFilter = {};
+    const targets = {};
     const configuration = {};
 
-    const configurationHandler = {
-        get: domain => JSON.parse(localStorage.getItem(domain)),
-
-        set: (domain, configuration) => {
-            localStorage.setItem(domain, JSON.stringify(configuration));
-        }
+    const getConfiguration = () => JSON.parse(localStorage.getItem(currentDomain));
+    const setConfiguration = configuration => {
+        localStorage.setItem(currentDomain, JSON.stringify(configuration));
     };
 
-    /**
-     * utils
-     */
+    const getDomain = () => currentDomain;
+    const setDomain = url => currentDomain = getHostName(url);
+
+    const getTargets = () => targets[currentDomain] || [];
+    const setTargets = value => targets[currentDomain] = value;
+
+    const hasConfiguration = () => getConfiguration() ? true : false;
 
     /**
-     * gets the domain part from the passed url
-     * @param  {String}     a an url
+     * Gets the host name from the passed url.
+     *
+     * @param  {String}     url an url
+     *
      * @return {String}     just the domain part of the url
      */
-    const getDomainName = url => {
+    const getHostName = url => {
         let hostname;
 
         if (url.indexOf("//") > -1) {
@@ -36,48 +39,35 @@ function filterOut() {
     };
 
     /**
-     * sets the number of possible targets in the badge
+     * Sets the number of possible targets in the badge.
+     *
      * @param {Number} tabId restrict the change to current tab
      */
-    const setBadge = tabId => {
+    const setBadge = (tabId, numberOfTargets) => {
         chrome
             .browserAction
             .setBadgeText({
-                text: itemsToFilter[currentDomain] ?
-                    itemsToFilter[currentDomain].length.toString() : '0',
-                tabId: tabId
+                tabId: tabId,
+                text: numberOfTargets.toString() || '0',
             });
     };
 
     /**
-     * returns domain or inits a new one
-     * @param  {String} domain the domain
+     * Returns currentDomain configuration or inits a new one.
+     *
      * @return {object}           a properly configured config object
      */
-    const initConfiguration = domain =>
-        configurationHandler
-        .get(domain) || {
+    const initConfiguration = () =>
+        getConfiguration() || {
             target: '',
             container: '',
             filtered: [],
-            debug: true
+            debug: true,
         };
 
-    const getConfiguration = () => {
-        configuration[currentDomain] = configurationHandler.get(currentDomain);
-
-        return configuration[currentDomain];
-    };
-
-    const hasConfig = () => configuration[currentDomain] ? true : false;
-
-    const getCurrentDomain = () => currentDomain;
-
-    const getResults = () => itemsToFilter[currentDomain] || [];
-
     /**
-     * this methods are called both from the inteface and as a reply
-     * to chrome events
+     * This methods are called both from the inteface and as a reply
+     * to chrome events.
      */
 
     /**
@@ -87,11 +77,9 @@ function filterOut() {
      * @param  {String} target
      * @param  {String} container
      */
-    const callSaveConfig = (target, container, debug) => {
-        const domain = getCurrentDomain();
-
-        configurationHandler.set(domain, {
-            ...initConfiguration(domain),
+    const callSaveConfig = ({ target, container, debug }) => {
+        setConfiguration({
+            ...initConfiguration(),
             target,
             container,
             debug,
@@ -100,15 +88,7 @@ function filterOut() {
     };
 
     /**
-     * group both functions in one single call
-     */
-    const callFullProcess = () => {
-        callProcessPage();
-        callFilterOut();
-    };
-
-    /**
-     * launchs the processing of the page to get targets' content to filter out
+     * Launchs the processing of the page to get targets' content to filter out.
      */
     const callProcessPage = () => {
         chrome.tabs.query({ currentWindow: true, active: true },
@@ -118,7 +98,7 @@ function filterOut() {
     };
 
     /**
-     * launchs the real filtering ot the content
+     * Launchs the real filtering ot the content.
      */
     const callFilterOut = () => {
         chrome.tabs.query({ currentWindow: true, active: true },
@@ -128,14 +108,24 @@ function filterOut() {
     };
 
     /**
+     * Groups both functions in one single call.
+     */
+    const callFullProcess = () => {
+        callProcessPage();
+        callFilterOut();
+    };
+
+    /**
      * Just filter when the user selects a given content
      * 
      * @param  {String} strContent The content to add/remove to filtered Array
      */
     const callToggleContent = strContent => {
-        if (configuration[currentDomain]) {
-            configuration[currentDomain].filtered.toggle(strContent);
-            configurationHandler.set(currentDomain, configuration[currentDomain]);
+        const configuration = getConfiguration();
+
+        if (configuration) {
+            configuration.filtered.toggle(strContent);
+            setConfiguration(configuration);
             callFilterOut();
         }
     };
@@ -153,20 +143,19 @@ function filterOut() {
      * @param  tabId
      */
     const doProcessPage = tabId => {
-        const handleResponse = response => {
-            console.log(response);
-            if (response) {
-                itemsToFilter[currentDomain] = response.results ?
-                    response.results.sort((a, b) => a.localeCompare(b)) : [];
-                setBadge(tabId);
+        const handleResponse = results => {
+            if (results) {
+                setTargets(results ?
+                    results.sort((a, b) => a.localeCompare(b)) : []);
+                setBadge(tabId, results.length);
             }
         };
 
-        if (configuration[currentDomain]) {
+        if (hasConfiguration()) {
             chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
                 chrome.tabs.sendMessage(tabs[0].id, {
                         op: 'process',
-                        config: configuration[currentDomain]
+                        config: getConfiguration(),
                     },
                     handleResponse);
             });
@@ -178,46 +167,40 @@ function filterOut() {
      * and filtered content.
      */
     const doFilterOut = tabId => {
-        if (configuration[currentDomain]) {
+        if (hasConfiguration()) {
             chrome
                 .tabs
-                .sendMessage(tabId,
-                {
+                .sendMessage(tabId, {
                     op: 'filter',
-                    config: configuration[currentDomain]
+                    config: getConfiguration(),
                 });
         }
     };
 
-    const onFocusChanged = ({ url, id }) => {
-        currentDomain = getDomainName(url);
-        setBadge(id);
+    const onEventHandler = ({ url, id }) => {
+        setDomain(url);
+
+        callFullProcess(id);
     };
 
-    const onActivated = ({ url, id }) => {
-        currentDomain = getDomainName(url);
-        setBadge(id);
-    };
+    const onTabUpdated = (tabId, change, tab) => {
+        setDomain(tab.url);
 
-    const onUpdated = (tabId, change, tab) => {
-        currentDomain = getDomainName(tab.url);
-        setBadge(tabId);
         getConfiguration();
-        if (hasConfig() && change.status === 'complete') {
+        if (hasConfiguration() && change.status === 'complete') {
             callFullProcess();
         }
-    };
+    }
 
     return {
         callReload,
         callSaveConfig,
         callToggleContent,
         getConfiguration,
-        getCurrentDomain,
-        getResults,
-        hasConfig,
-        onFocusChanged,
-        onActivated,
+        getDomain,
+        getTargets,
+        onEventHandler,
+        onTabUpdated,
     }
 };
 
@@ -234,16 +217,16 @@ function getExtension() {
  */
 chrome.windows.onFocusChanged.addListener(windowId => {
     if (windowId > -1) {
-        chrome.tabs.getSelected(windowId, extension.onFocusChanged);
+        chrome.tabs.getSelected(windowId, extension.onEventHandler);
     }
 });
 
 chrome.tabs.onActivated.addListener(activeInfo => {
-    chrome.tabs.get(activeInfo.tabId, extension.onActivated);
+    chrome.tabs.get(activeInfo.tabId, extension.onEventHandler);
 });
 
 /**
  * this method, additionally, updates the list of content and
  * executes the filtering if there's any data stored for the url
  */
-chrome.tabs.onUpdated.addListener(extension.onUpdated);
+chrome.tabs.onUpdated.addListener(extension.onTabUpdated);

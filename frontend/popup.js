@@ -32,26 +32,24 @@ function loadI18nMessages() {
 window.onload = function() {
     chrome.runtime.getBackgroundPage(backgroundPage => {
         const filterOut = backgroundPage.getExtension();
-        const currentDomain = filterOut.getCurrentDomain() || chrome.i18n.getMessage('loading');
-        const itemsToFilter = filterOut.getResults();
+        const domain = filterOut.getDomain() || chrome.i18n.getMessage('loading');
+        const targets = filterOut.getTargets();
         const configuration = filterOut.getConfiguration();
         const elementsListContent = document.createDocumentFragment();
 
-        $('.site_name').setText(currentDomain);
+        $('.site_name').setText(domain);
         loadI18nMessages();
 
         if (!configuration) {
-            if (filterOut.getCurrentDomain()) {
-                $('.no_config').show();
-            }
+            $('.no_config').show();
         } else {
-            if (itemsToFilter.length) {
-                itemsToFilter.forEach(strTargetContent => {
-                    const elementContent = document.createTextNode(strTargetContent);
+            if (targets.length) {
+                targets.forEach(targetContent => {
+                    const elementContent = document.createTextNode(targetContent);
                     const element = document.createElement('li');
 
                     element.appendChild(elementContent);
-                    if (configuration.filtered.includes(strTargetContent)) {
+                    if (configuration.filtered.includes(targetContent)) {
                         $(element).addClass('target-selected');
                     }
                     elementsListContent.appendChild(element);
@@ -119,9 +117,11 @@ window.onload = function() {
             closePane('#config');
             $('.no_config').hide();
 
-            filterOut.callSaveConfig($('#target').value(),
-                $('#container').value(),
-                $('#debug').value());
+            filterOut.callSaveConfig({
+                target: $('#target').value(),
+                container: $('#container').value(),
+                debug: $('#debug').value(),
+            });
         });
 
         $('#reload').on('click', () => {

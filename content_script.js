@@ -20,7 +20,6 @@ const processPage = configuration => {
         configuration.debug && $(element).addClass('filterout-debug');
     });
 
-    // mutation observer
     setObserver(configuration);
 
     return results;
